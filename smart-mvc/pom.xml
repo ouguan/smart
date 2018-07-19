@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>smart</artifactId>
@@ -10,7 +9,7 @@
 	<artifactId>smart-mvc</artifactId>
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
-	
+
 	<dependencies>
 		<!-- J2EE支持 -->
 		<dependency>
@@ -54,7 +53,7 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
 		</dependency>
-	
+
 		<!-- AOP支持 -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
@@ -64,7 +63,13 @@
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
 		</dependency>
-		
+
+		<!-- openstack支持 -->
+		<dependency>
+			<groupId>org.pacesys</groupId>
+			<artifactId>openstack4j</artifactId>
+		</dependency>
+
 		<!-- mybatis核心包 -->
 		<dependency>
 			<groupId>org.mybatis</groupId>
@@ -112,7 +117,7 @@
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
 		</dependency>
-		
+
 		<!-- Swagger API文档 -->
 		<dependency>
 			<groupId>io.swagger</groupId>

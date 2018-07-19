@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.smart.sso.server.dao.KeyStoneDao">
+	<select id="get" parameterType="java.lang.Integer" resultType="KeyStone">
+     	SELECT * 
+     	FROM SYS_KEYSTONE a
+     	WHERE ssoid = #{ssoid}
+    </select>
+    
+	<insert id="insert" parameterType="KeyStone" statementType="PREPARED" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO SYS_KEYSTONE(
+			ssoid,
+			userid,
+			username,
+			usertoken,
+			projectid
+		) 
+		VALUES (
+			#{ssoid},
+			#{userid},
+			#{username},
+			#{usertoken},
+			#{projectid}
+		)
+	</insert>
+	
+    <update id="update" parameterType="KeyStone" statementType="PREPARED">
+		UPDATE SYS_KEYSTONE a SET
+			a.userid = #{userid},
+			a.username = #{username},
+			a.usertoken = #{usertoken},
+			a.projectid = #{projectid}
+		WHERE a.ssoid = #{ssoid}
+	</update>
+	
+	<update id="resetKeyStoneToken" parameterType="map" statementType="PREPARED">
+		UPDATE SYS_KEYSTONE a SET
+			a.usertoken = #{usertoken},
+			a.projectid = #{projectid}
+		WHERE a.ssoid = #{ssoid}
+	</update>
+	
+	<select id="findPaginationByUserName" parameterType="map" resultType="KeyStone">   
+		SELECT * 
+     	FROM SYS_KEYSTONE a
+     	WHERE 1 = 1
+     	<if test="username != null and username != '' ">
+			AND a.username like CONCAT('%',#{username},'%')
+		</if>
+	</select>
+	
+	<select id="findByUserName" parameterType="map" resultType="KeyStone">   
+		SELECT a.* 
+     	FROM SYS_KEYSTONE a
+     	WHERE 1 = 1
+     	<if test="username != null and username != ''">
+			AND a.username = #{username} 
+		</if>
+	</select>
+
+	<select id="findBySSOId" parameterType="map" resultType="KeyStone">   
+		SELECT a.* 
+     	FROM SYS_KEYSTONE a
+     	WHERE 1 = 1
+     	<if test="ssoid != null">
+			AND a.ssoid = #{ssoid} 
+		</if>
+	</select>
+	
+	<select id="findByUserId" parameterType="map" resultType="KeyStone">   
+		SELECT a.* 
+     	FROM SYS_KEYSTONE a
+     	WHERE 1 = 1
+     	<if test="userid != null and userid != ''">
+			AND a.userid = #{userid} 
+		</if>
+	</select>
+	
+	<delete id="deleteById" parameterType="list" statementType="PREPARED">
+		DELETE FROM SYS_KEYSTONE
+		<choose>
+			<when test="list == null or list.size() == 0">
+				WHERE 1 != 1
+			</when>
+			<when test="list.size() == 1">
+				WHERE ssoid = <foreach collection="list" item="ssoid">#{ssoid}</foreach>
+			</when>
+			<otherwise>
+				WHERE ssoid in <foreach collection="list" item="ssoid" open="(" separator="," close=")">#{ssoid}</foreach>
+			</otherwise>
+		</choose>
+	</delete>
+</mapper>

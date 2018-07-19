@@ -6,14 +6,14 @@
 	<version>1.3.0</version>
 	<packaging>pom</packaging>
 	<name>${project.artifactId}</name>
-	
+
 	<modules>
 		<!-- SpringMVC + Spring + Mybatis核心 -->
 		<module>smart-mvc</module>
 		<!-- 单点登录权限系统 -->
 		<module>smart-sso</module>
 	</modules>
-	
+
 	<profiles>
 		<!-- 开发环境 -->
 		<profile>
@@ -37,15 +37,15 @@
 			</properties>
 		</profile>
 	</profiles>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<server.port>80</server.port>
-		
+
 		<servlet.version>3.1.0</servlet.version>
 		<junit.version>4.12</junit.version>
-		
+
 		<spring.version>4.2.1.RELEASE</spring.version>
 		<spring-redis.version>1.2.2.RELEASE</spring-redis.version>
 		<aspectj.version>1.8.9</aspectj.version>
@@ -75,18 +75,19 @@
 		<swagger.version>1.5.10</swagger.version>
 		<springfox.version>2.6.1</springfox.version>
 		<jackson.version>2.8.8</jackson.version>
+		<openstack4j.version>3.1.0</openstack4j.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- J2EE支持-->
+			<!-- J2EE支持 -->
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
 				<version>${servlet.version}</version>
 				<scope>provided</scope>
 			</dependency>
-			
+
 			<!-- 单元测试 -->
 			<dependency>
 				<groupId>junit</groupId>
@@ -94,14 +95,14 @@
 				<version>${junit.version}</version>
 				<scope>test</scope>
 			</dependency>
-			
+
 			<!-- Xstream处理 -->
 			<dependency>
 				<groupId>com.thoughtworks.xstream</groupId>
 				<artifactId>xstream</artifactId>
 				<version>${xstream.version}</version>
 			</dependency>
-			
+
 			<!-- Excel -->
 			<dependency>
 				<groupId>dom4j</groupId>
@@ -128,7 +129,7 @@
 				<artifactId>jxl</artifactId>
 				<version>${jxl.version}</version>
 			</dependency>
-			
+
 			<!-- Spring -->
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -176,11 +177,18 @@
 				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
-			    <groupId>org.springframework.session</groupId>
-			    <artifactId>spring-session-data-redis</artifactId>
-			    <version>${spring-redis.version}</version>
+				<groupId>org.springframework.session</groupId>
+				<artifactId>spring-session-data-redis</artifactId>
+				<version>${spring-redis.version}</version>
 			</dependency>
-			
+
+			<!-- openstack支持 -->
+			<dependency>
+				<groupId>org.pacesys</groupId>
+				<artifactId>openstack4j</artifactId>
+				<version>${openstack4j.version}</version>
+			</dependency>
+
 			<!-- AOP支持 -->
 			<dependency>
 				<groupId>org.aspectj</groupId>
@@ -192,49 +200,49 @@
 				<artifactId>aspectjweaver</artifactId>
 				<version>${aspectj.version}</version>
 			</dependency>
-			
+
 			<!-- Mybatis核心包 -->
 			<dependency>
 				<groupId>org.mybatis</groupId>
 				<artifactId>mybatis</artifactId>
 				<version>${mybatis.version}</version>
 			</dependency>
-			
+
 			<!-- Mybatis-Spring包 -->
 			<dependency>
 				<groupId>org.mybatis</groupId>
 				<artifactId>mybatis-spring</artifactId>
 				<version>${mybatis-spring.version}</version>
 			</dependency>
-			
+
 			<!-- IO操作 -->
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>${commons-io.version}</version>
 			</dependency>
-			
+
 			<!-- 文件上传所依赖的jar包 -->
 			<dependency>
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
 				<version>${commons-fileupload.version}</version>
 			</dependency>
-			
+
 			<!-- Mysql驱动程序 -->
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
 				<version>${mysql.version}</version>
 			</dependency>
-			
+
 			<!-- 阿里巴巴数据连接池 -->
 			<dependency>
 				<groupId>com.alibaba</groupId>
 				<artifactId>druid</artifactId>
 				<version>${druid.version}</version>
 			</dependency>
-			
+
 			<!-- 日志 -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
@@ -251,29 +259,29 @@
 				<artifactId>logback-classic</artifactId>
 				<version>${logback.version}</version>
 			</dependency>
-			
+
 			<!-- 日志桥接，Spring中commons-logging替换为logback -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>jcl-over-slf4j</artifactId>
 				<version>${jcl.version}</version>
 			</dependency>
-			
+
 			<!-- Java发送邮件 -->
 			<dependency>
 				<groupId>javax.mail</groupId>
 				<artifactId>mail</artifactId>
 				<version>${mail.version}</version>
 			</dependency>
-			
+
 			<!-- Json处理 -->
 			<dependency>
 				<groupId>com.alibaba</groupId>
 				<artifactId>fastjson</artifactId>
 				<version>${fastjson.version}</version>
 			</dependency>
-	
-			<!-- Jstl支持-->
+
+			<!-- Jstl支持 -->
 			<dependency>
 				<groupId>jstl</groupId>
 				<artifactId>jstl</artifactId>
@@ -284,21 +292,21 @@
 				<artifactId>jsp-api</artifactId>
 				<version>${jsp-api.version}</version>
 			</dependency>
-			
+
 			<!-- ActiveMQ -->
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>activemq-client</artifactId>
 				<version>${activemq.version}</version>
 			</dependency>
-			
+
 			<!-- 远程RPC调用hessian支持 -->
 			<dependency>
 				<groupId>com.caucho</groupId>
 				<artifactId>hessian</artifactId>
 				<version>${hessian.version}</version>
 			</dependency>
-			
+
 			<!-- Dubbo -->
 			<dependency>
 				<groupId>com.alibaba</groupId>
@@ -311,14 +319,14 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-	        
+
 			<!-- Zookeeper -->
 			<dependency>
 				<groupId>com.github.sgroschupf</groupId>
 				<artifactId>zkclient</artifactId>
 				<version>${zookeeper.version}</version>
 			</dependency>
-	
+
 			<!-- Netty -->
 			<dependency>
 				<groupId>io.netty</groupId>
@@ -335,7 +343,7 @@
 				<artifactId>netty-codec-http</artifactId>
 				<version>${netty.version}</version>
 			</dependency>
-			
+
 			<!-- Springfox API文档 -->
 			<dependency>
 				<groupId>io.swagger</groupId>
@@ -369,7 +377,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -391,9 +399,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.4</version>
-				<configuration>
-					<warName>/${project.artifactId}</warName>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
@@ -430,20 +435,20 @@
 					<include>**/*.xml</include>
 				</includes>
 			</resource>
-			
+
 			<resource>
 				<directory>src/main/resources</directory>
 				<!-- 过滤替换配置文件变量 -->
 				<filtering>true</filtering>
 			</resource>
-			
+
 			<!-- 环境配置文件 -->
 			<resource>
 				<directory>deploy/${env}</directory>
 			</resource>
 		</resources>
 	</build>
-	
+
 	<!-- 阿里云镜像 -->
 	<repositories>
 		<repository>
@@ -452,17 +457,17 @@
 			<url>http://maven.aliyun.com/nexus/content/groups/public/</url>
 		</repository>
 	</repositories>
-	
+
 	<issueManagement>
 		<system>github</system>
 		<url>https://github.com/a466350665/smart/issues</url>
 	</issueManagement>
-	
+
 	<scm>
 		<url>https://github.com/a466350665/smart</url>
 		<connection>https://github.com/a466350665/smart.git</connection>
 	</scm>
-	
+
 	<developers>
 		<developer>
 			<name>ZhouLe(Joe)</name>

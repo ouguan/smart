@@ -8,6 +8,7 @@
 	</parent>
 	<artifactId>smart-sso-server</artifactId>
 	<packaging>war</packaging>
+	<version>${project.parent.version}</version>
 	<name>${project.artifactId}</name>
 
 	<properties>

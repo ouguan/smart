@@ -2,10 +2,8 @@ package com.smart.sso.client;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.smart.sso.rpc.RpcUser;
 
 /**
@@ -58,7 +56,7 @@ public class SsoFilter extends ClientFilter {
 	private void invokeAuthInfoInSession(HttpServletRequest request, String token) throws IOException {
 		RpcUser rpcUser = authenticationRpcService.findAuthInfo(token);
 		if (rpcUser != null) {
-			SessionUtils.setSessionUser(request, new SessionUser(token, rpcUser.getAccount()));
+			SessionUtils.setSessionUser(request, new SessionUser(token, rpcUser.getAccount(), rpcUser.getKeystone()));
 		}
 	}
 

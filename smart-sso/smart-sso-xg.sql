@@ -185,11 +185,30 @@ CREATE TABLE  SYS_USER  (
    lastLoginTime  datetime DEFAULT NULL COMMENT '最后登录时间',
    loginCount  integer NOT NULL COMMENT '登录总次数',
    createTime  datetime NOT NULL COMMENT '创建时间',
-   isEnable  boolean NOT NULL COMMENT '是否启用',
+   isEnable  boolean NOT NULL COMMENT '是否启用'
   PRIMARY KEY ( id )
 ) COMMENT '用户表';
 
 -- ----------------------------
 -- Records of SYS_USER
 -- ----------------------------
-INSERT INTO  SYS_USER  VALUES ('2', 'admin', '26524bdf4ea266f131566a89e8f4972c', '127.0.0.1', '2018-04-09 16:20:23', '213', '2015-06-02 11:31:56', true);
+INSERT INTO  SYS_USER  VALUES ('2', 'admin', '26524bdf4ea266f131566a89e8f4972c', '127.0.0.1', '2018-04-09 16:20:23', '213', '2015-06-02 11:31:56', true, '38ce532d3e7a408aa93e6fcde35bead5');
+
+-- ----------------------------
+-- Table structure for  SYS_KEYSTONE 
+-- ----------------------------
+create table SYS_KEYSTONE(
+   id  integer identity(1,1) NOT NULL,
+   ssoId  integer NOT NULL,
+   userId varchar(255) NOT NULL,
+   userName varchar(255) NOT NULL,
+   userToken blob,
+   projectId varchar(255) NOT NULL,
+   CONSTRAINT PK_USERID primary key(id),
+   CONSTRAINT FK_SYS_RE_U_REFERENCE_SYS_USER  FOREIGN KEY ( ssoId ) REFERENCES  SYS_USER  ( id )
+) COMMENT 'keystone对应关系';
+create unique index idx_keystone on SYS_KEYSTONE(userid,userName);
+-- ----------------------------
+-- Records of SYS_KEYSTONE
+-- ----------------------------
+INSERT INTO  SYS_KEYSTONE(ssoId,userId,userName,projectId) values('2','38ce532d3e7a408aa93e6fcde35bead5','admin','b15ffb56f5964fffb53a63c9fe99e0b0');
