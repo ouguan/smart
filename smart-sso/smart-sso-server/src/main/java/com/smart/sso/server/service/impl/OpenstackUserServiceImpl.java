@@ -103,8 +103,6 @@ public class OpenstackUserServiceImpl extends KeyStoneServiceImpl implements Ope
         
         userOs = userAuthenticate(username, password, projectname);
         
-        System.out.println(userOs.identity().users().list());
-        
         this.dao.resetKeyStoneToken(SerializeUtil.tokenToBytes(userOs.getToken()), projectid, ssoid);
         return this.dao.findBySSOId(ssoid);
     }

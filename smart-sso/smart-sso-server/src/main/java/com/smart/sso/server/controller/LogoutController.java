@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.smart.mvc.util.StringUtils;
 import com.smart.sso.client.SessionUtils;
 import com.smart.sso.server.common.TokenManager;
-import com.smart.sso.server.service.OpenstackUserService;
 import com.smart.sso.server.util.CookieUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,17 +23,12 @@ public class LogoutController {
 
     @Resource
     private TokenManager         tokenManager;
-    @Resource
-    private OpenstackUserService openstackUserService;
 
     @ApiOperation("登出")
     @RequestMapping(method = RequestMethod.GET)
     public String logout(@ApiParam(value = "返回链接") String backUrl, HttpServletRequest request) {
 
         String token = CookieUtils.getCookie(request, TokenManager.TOKEN);
-        if(SessionUtils.getSessionUser(request) != null) {
-            openstackUserService.logout(SessionUtils.getSessionUser(request).getAccount());
-        }
         if (StringUtils.isNotBlank(token)) {
             tokenManager.remove(token);
         }
