@@ -3,8 +3,8 @@ package com.smart.sso.server.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Resource;
-import org.openstack4j.model.identity.v3.Token;
-import org.openstack4j.openstack.OSFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import com.smart.mvc.util.StringUtils;
 import com.smart.sso.client.openstack.OpenstackAuth;
@@ -20,6 +20,8 @@ import com.smart.sso.server.util.SerializeUtil;
 @Service("authenticationRpcService")
 public class AuthenticationRpcServiceImpl implements AuthenticationRpcService {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    
     @Resource
     private PermissionService permissionService;
     @Resource
@@ -45,8 +47,8 @@ public class AuthenticationRpcServiceImpl implements AuthenticationRpcService {
             keystone.setUsername(user.getKeystone().getUsername());
             keystone.setProjectid(user.getKeystone().getProjectid());
             keystone.setUsertoken(user.getKeystone().getUsertoken());
-            Token test = SerializeUtil.bytesToToken(user.getKeystone().getUsertoken());
-            System.out.println(OSFactory.clientFromToken(test).identity().users().list());
+            
+            logger.debug("KeyStone Token(过期时间) : "+SerializeUtil.bytesToToken(user.getKeystone().getUsertoken()).getExpires());
             return new RpcUser(user.getAccount(), SerializeUtil.serialByte(keystone));
         }
         return null;

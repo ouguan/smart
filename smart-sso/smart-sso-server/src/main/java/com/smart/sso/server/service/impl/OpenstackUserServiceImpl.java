@@ -3,6 +3,7 @@ package com.smart.sso.server.service.impl;
 import java.util.List;
 import javax.annotation.Resource;
 import org.openstack4j.api.OSClient.OSClientV3;
+import org.openstack4j.api.exceptions.ConnectionException;
 import org.openstack4j.model.common.ActionResponse;
 import org.openstack4j.model.common.Identifier;
 import org.openstack4j.model.identity.v3.Group;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.smart.mvc.config.ConfigUtils;
+import com.smart.mvc.exception.ValidateException;
 import com.smart.sso.server.model.KeyStone;
 import com.smart.sso.server.service.OpenstackUserService;
 import com.smart.sso.server.service.UserService;
@@ -81,7 +83,7 @@ public class OpenstackUserServiceImpl extends KeyStoneServiceImpl implements Ope
      */
     @Override
     @Transactional
-    public KeyStone login(Integer ssoid, String username, String password, String projectid) {
+    public KeyStone login(Integer ssoid, String username, String password, String projectid) throws ValidateException{
 
         OSClientV3 userOs;
         String projectname = null;
@@ -115,13 +117,19 @@ public class OpenstackUserServiceImpl extends KeyStoneServiceImpl implements Ope
     * @param proName
     * @return OSClientV3
      */
-    public OSClientV3 userAuthenticate(String username,String password,String projectname) {
+    public OSClientV3 userAuthenticate(String username,String password,String projectname) throws ValidateException{
+        
         logger.info("Openstack访问URL地址："+ConfigUtils.getProperty("openstack.url"));
-        OSClientV3 commonOs = OSFactory.builderV3()
-                .endpoint(ConfigUtils.getProperty("openstack.url"))
-                .credentials(username, password, Identifier.byName("default"))
-                .scopeToProject(Identifier.byName(projectname),Identifier.byName("default"))
-                .authenticate();
+        OSClientV3 commonOs;
+        try {
+            commonOs = OSFactory.builderV3()
+                    .endpoint(ConfigUtils.getProperty("openstack.url"))
+                    .credentials(username, password, Identifier.byName("default"))
+                    .scopeToProject(Identifier.byName(projectname),Identifier.byName("default"))
+                    .authenticate();
+        }catch(ConnectionException e) {
+            throw new ValidateException("OpenStack访问异常！可能原因：OpenStack服务URL地址错误,登录信息错误,OpenStack服务未启用！");
+        }
         return commonOs;
     }
     
@@ -132,14 +140,18 @@ public class OpenstackUserServiceImpl extends KeyStoneServiceImpl implements Ope
     * @param pwd
     * @return OSClientV3
      */
-    public OSClientV3 userAuthenticate(String username,String password) {
+    public OSClientV3 userAuthenticate(String username,String password) throws ValidateException{
         logger.info("Openstack访问URL地址："+ConfigUtils.getProperty("openstack.url"));
-        OSClientV3 commonOs = OSFactory.builderV3()
-                .endpoint(ConfigUtils.getProperty("openstack.url"))
-                .credentials(username, password, Identifier.byName("default"))
-                .authenticate();
+        OSClientV3 commonOs;
+        try {
+            commonOs = OSFactory.builderV3()
+                    .endpoint(ConfigUtils.getProperty("openstack.url"))
+                    .credentials(username, password, Identifier.byName("default"))
+                    .authenticate();
+        }catch(ConnectionException e) {
+            throw new ValidateException("OpenStack访问异常！可能原因：OpenStack服务URL地址错误,登录信息错误,OpenStack服务未启用！");
+        }
         return commonOs;
-        
     }
     
     /**

@@ -13,6 +13,7 @@
 	
 	<!-- 日志邮箱参数应用级：不同的应用可能异常通知邮箱不同 -->
 	<properties>
+	    <log.level>debug</log.level>
 		<log.mail.host>smtp.163.com</log.mail.host>
 		<log.mail.port>25</log.mail.port>
 		<log.mail.username>consukj@163.com</log.mail.username>

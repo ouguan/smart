@@ -3,7 +3,6 @@ package com.smart.sso.server.common;
 import java.util.Date;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,14 +35,16 @@ public class LocalTokenManager extends TokenManager {
 		}
 	}
 
-	public void addToken(String token, LoginUser loginUser) {
+	@Override
+    public void addToken(String token, LoginUser loginUser) {
 		DummyUser dummyUser = new DummyUser();
 		dummyUser.loginUser = loginUser;
 		extendExpiredTime(dummyUser);
 		tokenMap.putIfAbsent(token, dummyUser);
 	}
 
-	public LoginUser validate(String token) {
+	@Override
+    public LoginUser validate(String token) {
 		DummyUser dummyUser = tokenMap.get(token);
 		if (dummyUser == null) {
 			return null;
@@ -52,7 +53,8 @@ public class LocalTokenManager extends TokenManager {
 		return dummyUser.loginUser;
 	}
 
-	public void remove(String token) {
+	@Override
+    public void remove(String token) {
 		tokenMap.remove(token);
 	}
 
@@ -63,6 +65,7 @@ public class LocalTokenManager extends TokenManager {
 	 */
 	private void extendExpiredTime(DummyUser dummyUser) {
 		dummyUser.expired = new Date(new Date().getTime() + tokenTimeout * 1000);
+		logger.debug("SSO Token(过期时间) : " + dummyUser.expired);
 	}
 
 	// 复合结构体，含loginUser与过期时间expried两个成员

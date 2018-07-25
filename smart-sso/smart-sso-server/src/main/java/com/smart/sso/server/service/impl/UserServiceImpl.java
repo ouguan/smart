@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.smart.mvc.exception.ValidateException;
 import com.smart.mvc.model.Pagination;
 import com.smart.mvc.model.Result;
 import com.smart.mvc.model.ResultCode;
@@ -59,7 +60,12 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User, Integer> impleme
         } else {
             // <-- 验证KeyStone -->
             if (keystone != null) {
-                keystone = openstackUserService.login(user.getId(), account, password, keystone.getProjectid());
+                try {
+                    keystone = openstackUserService.login(user.getId(), account, password, keystone.getProjectid());
+                } catch(ValidateException e) {
+                    result.setCode(ResultCode.VALIDATE_ERROR).setMessage(e.getMessage());
+                    return result;
+                }
             }
             
             user.setLastLoginIp(ip);
