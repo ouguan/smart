@@ -34,6 +34,12 @@ public class AuthenticationRpcServiceImpl implements AuthenticationRpcService {
 
         return tokenManager.validate(token) != null;
     }
+    
+    @Override
+    public void remove(String token) {
+
+        tokenManager.remove(token);
+    }
 
     @Override
     public RpcUser findAuthInfo(String token) {

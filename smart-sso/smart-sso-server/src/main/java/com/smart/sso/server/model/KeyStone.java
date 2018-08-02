@@ -13,8 +13,10 @@ public class KeyStone extends PersistentObject {
     private String            username;
     /** KeyStone登录Token */
     private byte[]            usertoken;
-    /** KeyStone登录工程 */
+    /** KeyStone登录工程ID */
     private String            projectid;
+    /** KeyStone登录工程名称 */
+    private String            projectname;
 
     public Integer getSsoid() {
 
@@ -64,6 +66,16 @@ public class KeyStone extends PersistentObject {
     public void setProjectid(String projectid) {
 
         this.projectid = projectid;
+    }
+
+    public String getProjectname() {
+
+        return projectname;
+    }
+
+    public void setProjectname(String projectname) {
+
+        this.projectname = projectname;
     }
 
     public static long getSerialversionuid() {

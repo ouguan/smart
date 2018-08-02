@@ -4,6 +4,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import org.openstack4j.api.OSClient.OSClientV3;
 import org.openstack4j.api.exceptions.ConnectionException;
+import org.openstack4j.core.transport.Config;
 import org.openstack4j.model.common.ActionResponse;
 import org.openstack4j.model.common.Identifier;
 import org.openstack4j.model.identity.v3.Group;
@@ -106,7 +107,11 @@ public class OpenstackUserServiceImpl extends KeyStoneServiceImpl implements Ope
         userOs = userAuthenticate(username, password, projectname);
         
         this.dao.resetKeyStoneToken(SerializeUtil.tokenToBytes(userOs.getToken()), projectid, ssoid);
-        return this.dao.findBySSOId(ssoid);
+
+        logger.debug("KeyStone Token(过期时间) : " + userOs.getToken().getExpires());
+        KeyStone ret = this.dao.findBySSOId(ssoid);
+        ret.setProjectname(projectname);
+        return ret;
     }
 
     /**
@@ -126,6 +131,8 @@ public class OpenstackUserServiceImpl extends KeyStoneServiceImpl implements Ope
                     .endpoint(ConfigUtils.getProperty("openstack.url"))
                     .credentials(username, password, Identifier.byName("default"))
                     .scopeToProject(Identifier.byName(projectname),Identifier.byName("default"))
+                    .withConfig(Config.newConfig().withConnectionTimeout(Integer.valueOf(ConfigUtils.getProperty("sso.timeout")))
+                                                  .withReadTimeout((Integer.valueOf(ConfigUtils.getProperty("sso.timeout")))))
                     .authenticate();
         }catch(ConnectionException e) {
             throw new ValidateException("OpenStack访问异常！可能原因：OpenStack服务URL地址错误,登录信息错误,OpenStack服务未启用！");
@@ -147,6 +154,8 @@ public class OpenstackUserServiceImpl extends KeyStoneServiceImpl implements Ope
             commonOs = OSFactory.builderV3()
                     .endpoint(ConfigUtils.getProperty("openstack.url"))
                     .credentials(username, password, Identifier.byName("default"))
+                    .withConfig(Config.newConfig().withConnectionTimeout(Integer.valueOf(ConfigUtils.getProperty("sso.timeout")))
+                                                  .withReadTimeout((Integer.valueOf(ConfigUtils.getProperty("sso.timeout")))))
                     .authenticate();
         }catch(ConnectionException e) {
             throw new ValidateException("OpenStack访问异常！可能原因：OpenStack服务URL地址错误,登录信息错误,OpenStack服务未启用！");

@@ -3,8 +3,14 @@ package com.smart.sso.server.common;
 import java.util.Date;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import org.openstack4j.model.common.Identifier;
+import org.openstack4j.model.identity.v3.Token;
+import org.openstack4j.openstack.OSFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.smart.mvc.config.ConfigUtils;
+import com.smart.sso.server.model.KeyStone;
+import com.smart.sso.server.util.SerializeUtil;
 
 /**
  * 单实例环境令牌管理
@@ -49,6 +55,17 @@ public class LocalTokenManager extends TokenManager {
 		if (dummyUser == null) {
 			return null;
 		}
+		
+		// 重新扩展KeyStone Token信息
+        KeyStone keystone = dummyUser.loginUser.getKeystone();
+        Token keyStoneToken = SerializeUtil.bytesToToken(keystone.getUsertoken());
+        keyStoneToken = OSFactory.builderV3()
+                                 .endpoint(ConfigUtils.getProperty("openstack.url"))
+                                 .scopeToProject(Identifier.byName(keystone.getProjectname()),Identifier.byName("default"))
+                                 .token(keyStoneToken.getId())
+                                 .authenticate()
+                                 .getToken();
+        dummyUser.loginUser.getKeystone().setUsertoken(SerializeUtil.tokenToBytes(keyStoneToken));
 		extendExpiredTime(dummyUser);
 		return dummyUser.loginUser;
 	}

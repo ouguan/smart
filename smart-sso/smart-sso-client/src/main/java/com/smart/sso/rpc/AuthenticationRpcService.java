@@ -18,6 +18,15 @@ public interface AuthenticationRpcService {
 	 * @return
 	 */
 	public boolean validate(String token);
+	
+	/**
+     * 移除指定token
+     * 
+     * @param token
+     *            授权码
+     * @return
+     */
+    public void remove(String token);
 
 	/**
 	 * 根据登录的Token和应用编码获取授权用户信息
