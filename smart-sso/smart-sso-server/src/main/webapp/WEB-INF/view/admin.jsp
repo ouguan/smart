@@ -11,7 +11,7 @@
 		<meta charset="utf-8" />
 		<title>${_systemName}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-		<link type="images/x-icon" rel="shortcut icon" href="${_staticPath}/custom/assets/favicon.ico">
+        <link type="images/x-icon" rel="shortcut icon" href="${_staticPath}/custom/assets/favicon.png">
 		
 		<!--[if !IE]> -->
 		<link rel="stylesheet" href="${_staticPath}/assets/css/pace.css" />
@@ -74,7 +74,8 @@
 					<!-- #section:basics/navbar.layout.brand -->
 					<a href="#" class="navbar-brand">
 						<small>
-							<i class="fa fa-leaf"></i>
+							<!-- <i class="fa fa-leaf"></i> -->
+							<img alt="" src="${_staticPath}/custom/assets/favicon.png">
 							${_systemAdminName}
 						</small>
 					</a>

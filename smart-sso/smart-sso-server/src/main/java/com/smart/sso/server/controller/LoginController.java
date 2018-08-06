@@ -15,7 +15,6 @@ import com.smart.mvc.util.StringUtils;
 import com.smart.mvc.validator.Validator;
 import com.smart.mvc.validator.annotation.ValidateParam;
 import com.smart.sso.client.SsoFilter;
-import com.smart.sso.server.captcha.CaptchaHelper;
 import com.smart.sso.server.common.LoginUser;
 import com.smart.sso.server.common.TokenManager;
 import com.smart.sso.server.controller.common.BaseController;
@@ -56,13 +55,13 @@ public class LoginController extends BaseController {
 
     @ApiOperation("登录提交")
     @RequestMapping(method = RequestMethod.POST)
-    public String login(@ApiParam(value = "返回链接", required = true) @ValidateParam({ Validator.NOT_BLANK }) String backUrl, @ApiParam(value = "登录名", required = true) @ValidateParam({ Validator.NOT_BLANK }) String account, @ApiParam(value = "密码", required = true) @ValidateParam({ Validator.NOT_BLANK }) String password, @ApiParam(value = "验证码", required = true) @ValidateParam({ Validator.NOT_BLANK }) String captcha, HttpServletRequest request, HttpServletResponse response)
+    public String login(@ApiParam(value = "返回链接", required = true) @ValidateParam({ Validator.NOT_BLANK }) String backUrl, @ApiParam(value = "登录名", required = true) @ValidateParam({ Validator.NOT_BLANK }) String account, @ApiParam(value = "密码", required = true) @ValidateParam({ Validator.NOT_BLANK }) String password, HttpServletRequest request, HttpServletResponse response)
             throws UnsupportedEncodingException {
 
-        if (!CaptchaHelper.validate(request, captcha)) {
+        /*if (!CaptchaHelper.validate(request, captcha)) {
             request.setAttribute("errorMessage", "验证码不正确");
             return goLoginPath(backUrl, request);
-        }
+        }*/
         Result result = userService.login(getIpAddr(request), account, password);
         if (!result.getCode().equals(ResultCode.SUCCESS)) {
             request.setAttribute("errorMessage", result.getMessage());
