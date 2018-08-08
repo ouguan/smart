@@ -2,33 +2,34 @@ package com.smart.sso.server.controller.admin;
 
 import java.util.Date;
 import java.util.List;
-
 import javax.annotation.Resource;
-
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.smart.mvc.config.ConfigUtils;
 import com.smart.mvc.exception.ValidateException;
 import com.smart.mvc.model.Pagination;
 import com.smart.mvc.model.Result;
 import com.smart.mvc.model.ResultCode;
+import com.smart.mvc.server.provider.PasswordProvider;
 import com.smart.mvc.util.StringUtils;
 import com.smart.mvc.validator.Validator;
 import com.smart.mvc.validator.annotation.ValidateParam;
+import com.smart.sso.client.SessionUtils;
+import com.smart.sso.client.openstack.OpenstackAuth;
 import com.smart.sso.server.controller.common.BaseController;
 import com.smart.sso.server.enums.TrueFalseEnum;
+import com.smart.sso.server.model.KeyStone;
 import com.smart.sso.server.model.Role;
 import com.smart.sso.server.model.User;
 import com.smart.sso.server.model.UserRole;
-import com.smart.sso.server.provider.PasswordProvider;
 import com.smart.sso.server.service.RoleService;
 import com.smart.sso.server.service.UserRoleService;
 import com.smart.sso.server.service.UserService;
-
+import com.smart.sso.server.util.SerializeUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -57,9 +58,9 @@ public class UserController extends BaseController {
 
 	@ApiOperation("新增/修改页")
 	@RequestMapping(value = "/edit", method = RequestMethod.GET)
-	public String edit(@ApiParam(value = "id") Integer id, Model model) {
+	public String edit(@ApiParam(value = "id") String id, Model model) {
 		User user;
-		if (id == null) {
+		if (StringUtils.isBlank(id)) {
 			user = new User();
 		}
 		else {
@@ -82,7 +83,7 @@ public class UserController extends BaseController {
 	@ApiOperation("验证登录名")
 	@RequestMapping(value = "/validateAccount", method = RequestMethod.POST)
 	public @ResponseBody Result validateAccount(
-			@ApiParam(value = "id") Integer id,
+			@ApiParam(value = "id") String id,
 			@ApiParam(value = "登录名", required = true) @ValidateParam({ Validator.NOT_BLANK }) String account) {
 		Result result = Result.createSuccessResult();
 		User user = userService.findByAccount(account);
@@ -104,14 +105,14 @@ public class UserController extends BaseController {
 	@ApiOperation("新增/修改提交")
 	@ApiResponse(response = Result.class, code = 200, message = "success")
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public @ResponseBody Result save(
-			@ApiParam(value = "id") Integer id,
+	public @ResponseBody Result save(HttpServletRequest request,
+			@ApiParam(value = "id") String id,
 			@ApiParam(value = "登录名", required = true) @ValidateParam({ Validator.NOT_BLANK }) String account,
 			@ApiParam(value = "密码 ") String password,
 			@ApiParam(value = "是否启用", required = true) @ValidateParam({ Validator.NOT_BLANK }) Boolean isEnable,
 			@ApiParam(value = "角色ids") String roleIds) {
 		User user;
-		if (id == null) {
+		if (StringUtils.isBlank(id)) {
 			if (StringUtils.isBlank(password)) {
 				throw new ValidateException("密码不能为空");
 			}
@@ -123,8 +124,18 @@ public class UserController extends BaseController {
 		}
 		user.setAccount(account);
 		if (StringUtils.isNotBlank(password)) {
-			user.setPassword(PasswordProvider.encrypt(password));
+			user.setPassword(password);
 		}
+		if (SessionUtils.getSessionUser(request).getKeystone() != null) {
+		    OpenstackAuth auth = (OpenstackAuth) SerializeUtil.deserializeObjectInputStream(SessionUtils.getSessionUser(request).getKeystone(), OpenstackAuth.class);
+            KeyStone keyStone = KeyStone.builder()
+                                        .ssoid(auth.getSsoid())
+                                        .userid(auth.getUserid())
+                                        .name(auth.getUsername())
+                                        .projectId(auth.getProjectid())
+                                        .build();
+		    user.setKeystone(keyStone);
+        }
 		user.setIsEnable(isEnable);
 		userService.save(user, getAjaxIds(roleIds));
 		return Result.createSuccessResult();
@@ -146,7 +157,7 @@ public class UserController extends BaseController {
 		return Result.createSuccessResult();
 	}
 	
-	private List<Role> getRoleList(Integer userId) {
+	private List<Role> getRoleList(String userId) {
 		List<Role> list = roleService.findByAll(TrueFalseEnum.TRUE.getValue());
 		if (userId != null) {
 			for (Role role : list) {

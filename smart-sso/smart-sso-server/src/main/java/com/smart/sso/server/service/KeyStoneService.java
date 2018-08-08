@@ -7,7 +7,7 @@ import com.smart.mvc.service.mybatis.Service;
 import com.smart.sso.server.model.KeyStone;
 import com.smart.sso.server.model.User;
 
-public interface KeyStoneService extends Service<KeyStone, Integer> {
+public interface KeyStoneService extends Service<KeyStone, String> {
 
     /**
      * 登录
@@ -29,7 +29,7 @@ public interface KeyStoneService extends Service<KeyStone, Integer> {
      *            token(已加密)
      * @param ssoid
      */
-    public void resetKeyStoneToken(byte[] usertoken, String projectid, Integer ssoid);
+    public void resetKeyStoneToken(byte[] usertoken, String projectid, String ssoid);
 
     /**
      * 根据登录名和应用ID查询分页列表
@@ -78,7 +78,7 @@ public interface KeyStoneService extends Service<KeyStone, Integer> {
      *            应用ID
      * @return
      */
-    public KeyStone findBySSOId(Integer ssoid);
+    public KeyStone findBySSOId(String ssoid);
 
-    public void save(KeyStone keystone, List<Integer> ssoIdList);
+    public void save(KeyStone keystone, List<String> ssoIdList);
 }

@@ -32,6 +32,7 @@ public class ConfigServlet extends HttpServlet {
 			servletContext.setAttribute("_companyName", ConfigUtils.getProperty("system.company.name"));
 			servletContext.setAttribute("_companyPhone", ConfigUtils.getProperty("system.company.phone"));
 			servletContext.setAttribute("_copyRight", ConfigUtils.getProperty("system.copy.right"));
+			servletContext.setAttribute("_copyYear", ConfigUtils.getProperty("system.copy.year"));
 		}
 		catch (Exception e) {
 			logger.error("系统初始化参数配置有误", e);

@@ -6,9 +6,9 @@ import com.smart.mvc.dao.mybatis.Dao;
 import com.smart.mvc.model.Pagination;
 import com.smart.sso.server.model.KeyStone;
 
-public interface KeyStoneDao extends Dao<KeyStone, Integer> {
+public interface KeyStoneDao extends Dao<KeyStone, String> {
 
-    public KeyStone findBySSOId(@Param("ssoid") Integer ssoid);
+    public KeyStone findBySSOId(@Param("ssoid") String ssoid);
 
     public KeyStone findByUserId(@Param("userid") String userid);
 
@@ -16,5 +16,5 @@ public interface KeyStoneDao extends Dao<KeyStone, Integer> {
     
     public List<KeyStone> findPaginationByUserName(@Param("username") String username, Pagination<KeyStone> p);
     
-    public int resetKeyStoneToken(@Param("usertoken") byte[] usertoken, @Param("projectid") String projectid, @Param("ssoid") Integer ssoid);
+    public int resetKeyStoneToken(@Param("usertoken") byte[] usertoken, @Param("projectid") String projectid, @Param("ssoid") String ssoid);
 }

@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.smart.sso.server.dao.RoleDao">
-	<select id="get" parameterType="java.lang.Integer" resultType="Role">
+	<select id="get" parameterType="java.lang.String" resultType="Role">
      	SELECT * 
      	FROM SYS_ROLE a
      	WHERE id = #{id}
     </select>
     
-	<insert id="insert" parameterType="Role" statementType="PREPARED" useGeneratedKeys="true" keyProperty="id">
+	<insert id="insert" parameterType="Role" statementType="PREPARED" keyProperty="id">
 		INSERT INTO SYS_ROLE(
+		    id,
 			name,
 			sort,
 			description,
 			isEnable
 		) 
 		VALUES (
+		    #{id},
 			#{name},
 			#{sort},
 			#{description},

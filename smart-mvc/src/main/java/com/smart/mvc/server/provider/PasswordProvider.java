@@ -1,4 +1,4 @@
-package com.smart.sso.server.provider;
+package com.smart.mvc.server.provider;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;

@@ -3,14 +3,11 @@ package com.smart.sso.server.service.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.annotation.Resource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-
 import com.smart.mvc.service.mybatis.impl.ServiceImpl;
 import com.smart.sso.server.dao.RolePermissionDao;
 import com.smart.sso.server.model.RolePermission;
@@ -20,7 +17,7 @@ import com.smart.sso.server.service.RolePermissionService;
 import com.smart.sso.server.service.RoleService;
 
 @Service("rolePermissionService")
-public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionDao, RolePermission, Integer> implements RolePermissionService {
+public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionDao, RolePermission, String> implements RolePermissionService {
 	
 	@Resource
 	private RoleService roleService;
@@ -29,18 +26,20 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionDao, Ro
 	@Resource
 	private PermissionJmsService permissionJmsService;
 
-	@Autowired
+	@Override
+    @Autowired
 	public void setDao(RolePermissionDao dao) {
 		this.dao = dao;
 	}
 
-	@Transactional
-	public void allocate(Integer appId, Integer roleId, List<Integer> permissionIdList) {
+	@Override
+    @Transactional
+	public void allocate(String appId, String roleId, List<String> permissionIdList) {
 		dao.deleteByAppAndRoleId(appId, roleId);
 
 		List<RolePermission> list = new ArrayList<RolePermission>();
-		Integer permissionId;
-		for (Iterator<Integer> i$ = permissionIdList.iterator(); i$.hasNext(); list
+		String permissionId;
+		for (Iterator<String> i$ = permissionIdList.iterator(); i$.hasNext(); list
 				.add(new RolePermission(appId, roleId, permissionId))) {
 			permissionId = i$.next();
 		}
@@ -52,19 +51,23 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionDao, Ro
 		permissionJmsService.send(appService.get(appId).getCode());
 	}
 
-	public List<RolePermission> findByRoleId(Integer roleId) {
+	@Override
+    public List<RolePermission> findByRoleId(String roleId) {
 		return dao.findByRoleId(roleId);
 	}
 
-	public void deleteByPermissionIds(List<Integer> idList) {
+	@Override
+    public void deleteByPermissionIds(List<String> idList) {
 		dao.deleteByPermissionIds(idList);
 	}
 	
-	public void deleteByRoleIds(List<Integer> idList) {
+	@Override
+    public void deleteByRoleIds(List<String> idList) {
 		dao.deleteByRoleIds(idList);
 	}
 	
-	public void deleteByAppIds(List<Integer> idList) {
+	@Override
+    public void deleteByAppIds(List<String> idList) {
 		dao.deleteByAppIds(idList);
 	}
 }

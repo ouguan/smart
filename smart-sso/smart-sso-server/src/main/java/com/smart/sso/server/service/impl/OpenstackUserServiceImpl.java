@@ -84,7 +84,7 @@ public class OpenstackUserServiceImpl extends KeyStoneServiceImpl implements Ope
      */
     @Override
     @Transactional
-    public KeyStone login(Integer ssoid, String username, String password, String projectid) throws ValidateException{
+    public KeyStone login(String ssoid, String username, String password, String projectid) throws ValidateException{
 
         OSClientV3 userOs;
         String projectname = null;
@@ -99,12 +99,14 @@ public class OpenstackUserServiceImpl extends KeyStoneServiceImpl implements Ope
             }
         }
         
-        if(projectname == null){
+        if(projectname == null && projects.size() > 0){
             projectid = projects.get(0).getId();
             projectname = projects.get(0).getName();
         }
         
-        userOs = userAuthenticate(username, password, projectname);
+        if(projectname != null) {
+            userOs = userAuthenticate(username, password, projectname);
+        }
         
         this.dao.resetKeyStoneToken(SerializeUtil.tokenToBytes(userOs.getToken()), projectid, ssoid);
 

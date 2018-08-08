@@ -12,9 +12,9 @@ public class RpcPermission implements Serializable {
 	private static final long serialVersionUID = 6413358335961655343L;
 
 	/** ID */
-	private Integer id;
+	private String id;
 	/** 父ID */
-	private Integer parentId;
+	private String parentId;
 	/** 图标 */
 	private String icon;
 	/** 名称 */
@@ -24,19 +24,19 @@ public class RpcPermission implements Serializable {
 	/** 是否菜单 */
 	private Boolean isMenu;
 
-	public Integer getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
-	public Integer getParentId() {
+	public String getParentId() {
 		return parentId;
 	}
 
-	public void setParentId(Integer parentId) {
+	public void setParentId(String parentId) {
 		this.parentId = parentId;
 	}
 

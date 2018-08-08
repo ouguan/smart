@@ -14,7 +14,7 @@ import com.smart.sso.server.model.User;
 import com.smart.sso.server.service.KeyStoneService;
 
 @Service("keyStoneService")
-public class KeyStoneServiceImpl extends ServiceImpl<KeyStoneDao, KeyStone, Integer> implements KeyStoneService {
+public class KeyStoneServiceImpl extends ServiceImpl<KeyStoneDao, KeyStone, String> implements KeyStoneService {
     
     @Override
     @Autowired
@@ -43,7 +43,7 @@ public class KeyStoneServiceImpl extends ServiceImpl<KeyStoneDao, KeyStone, Inte
 
     @Override
     @Transactional
-    public void resetKeyStoneToken(byte[] usertoken, String projectid, Integer ssoid) {
+    public void resetKeyStoneToken(byte[] usertoken, String projectid, String ssoid) {
         verifyRows(dao.resetKeyStoneToken(usertoken, projectid, ssoid), 1, "KeyStone立牌信息数据库重置失败");
     }
 
@@ -67,19 +67,19 @@ public class KeyStoneServiceImpl extends ServiceImpl<KeyStoneDao, KeyStone, Inte
     }
 
     @Override
-    public KeyStone findBySSOId(Integer ssoid) {
+    public KeyStone findBySSOId(String ssoid) {
 
         return dao.findBySSOId(ssoid);
     }
 
     @Override
     @Transactional
-    public void deleteById(List<Integer> idList) {
+    public void deleteById(List<String> idList) {
         verifyRows(dao.deleteById(idList), idList.size(), "用户数据库删除KeyStone信息失败");
     }
 
     @Override
-    public void save(KeyStone user, List<Integer> ssoIdList) {
+    public void save(KeyStone user, List<String> ssoIdList) {
         save(user);
     }   
     

@@ -1,7 +1,6 @@
 package com.smart.sso.server.service;
 
 import java.util.List;
-
 import com.smart.mvc.model.Pagination;
 import com.smart.mvc.service.mybatis.Service;
 import com.smart.sso.server.model.Role;
@@ -11,7 +10,7 @@ import com.smart.sso.server.model.Role;
  * 
  * @author Joe
  */
-public interface RoleService extends Service<Role, Integer> {
+public interface RoleService extends Service<Role, String> {
 	
 	/**
 	 * 启用禁用操作
@@ -19,7 +18,7 @@ public interface RoleService extends Service<Role, Integer> {
 	 * @param idList 角色ID集合
 	 * @return
 	 */
-	public void enable(Boolean isEnable, List<Integer> idList);
+	public void enable(Boolean isEnable, List<String> idList);
 	
 	/**
 	 * 根据角色名称和应用ID查询分页列表

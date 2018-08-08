@@ -46,7 +46,7 @@ public interface OpenstackUserService{
      * @param pwd
      * @return OSClientV3
      */
-    KeyStone login(Integer ssoid, String username, String password, String projectid);
+    KeyStone login(String ssoid, String username, String password, String projectid);
 
     /**
      * @author: zsh

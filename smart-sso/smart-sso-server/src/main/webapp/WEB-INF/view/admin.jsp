@@ -327,7 +327,7 @@
 					<div class="footer-content">
 						<span class="bigger-120">
 							<span class="blue bolder">${_systemAdminName}</span>
-							 &copy; 2017
+							 &copy; ${_copyYear}
 						</span>
 
 						&nbsp; &nbsp;

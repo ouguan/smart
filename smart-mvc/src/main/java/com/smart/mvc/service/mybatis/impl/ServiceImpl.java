@@ -5,14 +5,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.smart.mvc.dao.mybatis.Dao;
 import com.smart.mvc.exception.DaoException;
 import com.smart.mvc.model.Pagination;
 import com.smart.mvc.model.PersistentObject;
+import com.smart.mvc.server.provider.IdProvider;
 import com.smart.mvc.service.mybatis.Service;
 
 /**
@@ -41,7 +40,8 @@ public abstract class ServiceImpl<DAO extends Dao<T, ID>, T extends PersistentOb
 	 * @param p
 	 * @return
 	 */
-	public Pagination<T> findByAllPagination(Pagination<T> p) {
+	@Override
+    public Pagination<T> findByAllPagination(Pagination<T> p) {
 		dao.findByAll(p);
 		return p;
 	}
@@ -53,7 +53,8 @@ public abstract class ServiceImpl<DAO extends Dao<T, ID>, T extends PersistentOb
 	 *            pk
 	 * @return T
 	 */
-	public T get(ID pk) {
+	@Override
+    public T get(ID pk) {
 		return dao.get(pk);
 	}
 
@@ -64,7 +65,8 @@ public abstract class ServiceImpl<DAO extends Dao<T, ID>, T extends PersistentOb
 	 *            <PK> pks
 	 * @return List<T>
 	 */
-	public List<T> get(Collection<ID> pks) {
+	@Override
+    public List<T> get(Collection<ID> pks) {
 		List<T> list = new ArrayList<T>(pks.size());
 		for (ID pk : pks) {
 			list.add(get(pk));
@@ -79,8 +81,10 @@ public abstract class ServiceImpl<DAO extends Dao<T, ID>, T extends PersistentOb
 	 *            t
 	 * 
 	 */
-	public void save(T t) {
+	@Override
+    public void save(T t) {
 		if (t.getId() == null) {
+		    t.setId(IdProvider.createUUIDId());
 			dao.insert(t);
 		}
 		else {
@@ -94,7 +98,8 @@ public abstract class ServiceImpl<DAO extends Dao<T, ID>, T extends PersistentOb
 	 * @param List
 	 *            <T> ts
 	 */
-	public void save(Collection<T> ts) {
+	@Override
+    public void save(Collection<T> ts) {
 		for (T t : ts) {
 			save(t);
 		}
@@ -106,7 +111,8 @@ public abstract class ServiceImpl<DAO extends Dao<T, ID>, T extends PersistentOb
 	 * @param T
 	 *            t
 	 */
-	public void update(T t) {
+	@Override
+    public void update(T t) {
 		verifyRows(dao.update(t), 1, "数据库更新失败");
 	}
 
@@ -116,7 +122,8 @@ public abstract class ServiceImpl<DAO extends Dao<T, ID>, T extends PersistentOb
 	 * @param List
 	 *            <T> ts
 	 */
-	public void update(Collection<T> ts) {
+	@Override
+    public void update(Collection<T> ts) {
 		for (T t : ts) {
 			update(t);
 		}
@@ -128,7 +135,8 @@ public abstract class ServiceImpl<DAO extends Dao<T, ID>, T extends PersistentOb
 	 * @param T
 	 *            t
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public void delete(T t) {
 		deleteById((ID) t.getId());
 	}
@@ -139,7 +147,8 @@ public abstract class ServiceImpl<DAO extends Dao<T, ID>, T extends PersistentOb
 	 * @param List
 	 *            <T> ts
 	 */
-	public void delete(Collection<T> ts) {
+	@Override
+    public void delete(Collection<T> ts) {
 		for (T t : ts) {
 			delete(t);
 		}
@@ -152,7 +161,8 @@ public abstract class ServiceImpl<DAO extends Dao<T, ID>, T extends PersistentOb
 	 *            pk
 	 * @return T
 	 */
-	public void deleteById(ID id) {
+	@Override
+    public void deleteById(ID id) {
 		deleteById(Arrays.asList(id));
 	}
 
@@ -163,7 +173,8 @@ public abstract class ServiceImpl<DAO extends Dao<T, ID>, T extends PersistentOb
 	 *            <PK> pks
 	 * @return List<T>
 	 */
-	public void deleteById(List<ID> idList) {
+	@Override
+    public void deleteById(List<ID> idList) {
 		verifyRows(dao.deleteById(idList), idList.size(), "数据库删除失败");
 	}
 

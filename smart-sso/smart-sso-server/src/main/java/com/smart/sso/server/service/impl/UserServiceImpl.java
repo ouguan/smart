@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
+import org.openstack4j.openstack.identity.v3.domain.KeystoneUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,13 +12,13 @@ import com.smart.mvc.exception.ValidateException;
 import com.smart.mvc.model.Pagination;
 import com.smart.mvc.model.Result;
 import com.smart.mvc.model.ResultCode;
+import com.smart.mvc.server.provider.PasswordProvider;
 import com.smart.mvc.service.mybatis.impl.ServiceImpl;
 import com.smart.sso.server.dao.UserDao;
 import com.smart.sso.server.enums.TrueFalseEnum;
 import com.smart.sso.server.model.KeyStone;
 import com.smart.sso.server.model.User;
 import com.smart.sso.server.model.UserRole;
-import com.smart.sso.server.provider.PasswordProvider;
 import com.smart.sso.server.service.AppService;
 import com.smart.sso.server.service.KeyStoneService;
 import com.smart.sso.server.service.OpenstackUserService;
@@ -25,7 +26,7 @@ import com.smart.sso.server.service.UserRoleService;
 import com.smart.sso.server.service.UserService;
 
 @Service("userService")
-public class UserServiceImpl extends ServiceImpl<UserDao, User, Integer> implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserDao, User, String> implements UserService {
 
     @Resource
     private UserRoleService      userRoleService;
@@ -62,6 +63,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User, Integer> impleme
             if (keystone != null) {
                 try {
                     keystone = openstackUserService.login(user.getId(), account, password, keystone.getProjectid());
+                    keyStoneService.save(keystone);
                 } catch(ValidateException e) {
                     result.setCode(ResultCode.VALIDATE_ERROR).setMessage(e.getMessage());
                     return result;
@@ -79,7 +81,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User, Integer> impleme
     }
 
     @Override
-    public void enable(Boolean isEnable, List<Integer> idList) {
+    public void enable(Boolean isEnable, List<String> idList) {
 
         verifyRows(dao.enable(isEnable, idList), idList.size(), "用户数据库更新失败");
     }
@@ -91,7 +93,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User, Integer> impleme
     }
 
     @Override
-    public void resetPassword(String password, List<Integer> idList) {
+    public void resetPassword(String password, List<String> idList) {
 
         verifyRows(dao.resetPassword(password, idList), idList.size(), "用户密码数据库重置失败");
     }
@@ -111,14 +113,14 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User, Integer> impleme
     
     @Override
     @Transactional
-    public void deleteById(List<Integer> idList) {
+    public void deleteById(List<String> idList) {
 
         userRoleService.deleteByUserIds(idList);
         verifyRows(dao.deleteById(idList), idList.size(), "用户数据库删除失败");
     }
 
     @Override
-    public void updatePassword(Integer id, String newPassword) {
+    public void updatePassword(String id, String newPassword) {
 
         User user = get(id);
         user.setPassword(PasswordProvider.encrypt(newPassword));
@@ -126,12 +128,33 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User, Integer> impleme
     }
 
     @Override
-    public void save(User user, List<Integer> roleIdList) {
+    public void save(User user, List<String> roleIdList) {
 
+        // 创建Openstack  KeyStone用户
+        KeystoneUser keyStoneUser = (KeystoneUser) KeystoneUser.builder()
+                .name(user.getAccount())
+                .password(user.getPassword())
+                .enabled(user.getIsEnable())
+                .defaultProjectId(user.getKeystone().getProjectid())
+                .build();
+        openstackUserService.createUser(user.getKeystone().getUserid(), keyStoneUser);
+        
+        // 创建SSO用户
+        user.setPassword(PasswordProvider.encrypt(user.getPassword()));// 对密码进行加密
         save(user);
+        
+        // SSO用户关联KeyStone用户
+        KeyStone keyStone = new KeyStone();
+        keyStone.setSsoid(findByAccount(user.getAccount()).getId());
+        keyStone.setUserid(user.getKeystone().getUserid());
+        keyStone.setUsername(user.getAccount());
+        keyStone.setProjectid(user.getKeystone().getProjectid());
+        keyStone.setProjectname(user.getKeystone().getProjectname());
+        keyStoneService.save(keyStone);
+        
         List<UserRole> userRoleList = new ArrayList<UserRole>();
         UserRole bean;
-        for (Integer roleId : roleIdList) {
+        for (String roleId : roleIdList) {
             bean = new UserRole();
             bean.setUserId(user.getId());
             bean.setRoleId(roleId);

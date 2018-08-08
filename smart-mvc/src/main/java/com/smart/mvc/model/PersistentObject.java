@@ -12,16 +12,16 @@ public class PersistentObject implements Serializable{
 	private static final long serialVersionUID = 1472145516693079043L;
 	
 	/** 主键ID */
-	private Integer id;
+	public String id;
 
-	public Integer getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(String id) {
 		this.id = id;
 	}
-
+	
 	/**
 	 * 覆盖原equals方法，只要对象类型相同并且主键相同，那么返回true，表示两个对象相等
 	 * 
@@ -29,7 +29,8 @@ public class PersistentObject implements Serializable{
 	 *            o
 	 * @return boolean
 	 */
-	public boolean equals(Object o) {
+	@Override
+    public boolean equals(Object o) {
 		if (this == o)
 			return true;
 		if (o == null || !(o instanceof PersistentObject)) {
@@ -44,7 +45,8 @@ public class PersistentObject implements Serializable{
 	 * 
 	 * @return int
 	 */
-	public int hashCode() {
+    @Override
+    public int hashCode() {
 		if (id == null) {
 			return Integer.valueOf(0);
 		}
@@ -56,7 +58,8 @@ public class PersistentObject implements Serializable{
 	 * 
 	 * @return String
 	 */
-	public String toString() {
+	@Override
+    public String toString() {
 		return this.getClass().getName() + "[id=" + id + "]";
 	}
 }

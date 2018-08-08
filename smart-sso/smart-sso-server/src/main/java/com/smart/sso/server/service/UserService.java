@@ -1,9 +1,8 @@
 package com.smart.sso.server.service;
 
 import java.util.List;
-
-import com.smart.mvc.model.Result;
 import com.smart.mvc.model.Pagination;
+import com.smart.mvc.model.Result;
 import com.smart.mvc.service.mybatis.Service;
 import com.smart.sso.server.model.User;
 
@@ -12,7 +11,7 @@ import com.smart.sso.server.model.User;
  * 
  * @author Joe
  */
-public interface UserService extends Service<User, Integer> {
+public interface UserService extends Service<User, String> {
 	
 	/**
 	 * 登录
@@ -33,14 +32,14 @@ public interface UserService extends Service<User, Integer> {
 	 * @param idList 用户ID集合
 	 * @return
 	 */
-	public void enable(Boolean isEnable, List<Integer> idList);
+	public void enable(Boolean isEnable, List<String> idList);
 	
 	/**
 	 * 重置密码
 	 * @param password 初始化密码(已加密)
 	 * @param idList 
 	 */
-	public void resetPassword(String password, List<Integer> idList);
+	public void resetPassword(String password, List<String> idList);
 
 	/**
 	 * 根据登录名和应用ID查询分页列表
@@ -69,8 +68,8 @@ public interface UserService extends Service<User, Integer> {
 	 *            新密码
 	 * @return
 	 */
-	public void updatePassword(Integer id, String newPassword);
+	public void updatePassword(String id, String newPassword);
 	
 	
-	public void save(User user, List<Integer> roleIdList);
+	public void save(User user, List<String> roleIdList);
 }

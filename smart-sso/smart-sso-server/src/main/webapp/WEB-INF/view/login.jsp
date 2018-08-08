@@ -75,29 +75,6 @@
 <!-- Google Font -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 <link rel="stylesheet" href="${_staticPath}/assets/css/home.css" />
-
-<!-- bootstrap & fontawesome -->
-<link rel="stylesheet" href="../../smart-static/assets/css/bootstrap.css" />
-<link rel="stylesheet" href="../../smart-static/assets/css/font-awesome.css" />
-
-<!-- text fonts -->
-<link rel="stylesheet" href="../../smart-static/assets/css/ace-fonts.css" />
-
-<!-- ace styles -->
-<link rel="stylesheet" href="../../smart-static/assets/css/ace.css" />
-
-<!--[if lte IE 9]>
-			<link rel="stylesheet" href="../../smart-static/assets/css/ace-part2.css" />
-		<![endif]-->
-<link rel="stylesheet" href="../../smart-static/assets/css/ace-rtl.css" />
-<!-- Theme style -->
-<link rel="stylesheet" href="../../smart-static/assets/css/AdminLTE.css">
-<!-- AdminLTE Skins. Choose a skin from the css/skins
-       folder instead of downloading all of them to reduce the load. -->
-<link rel="stylesheet" href="../../smart-static/assets/css/skins/_all-skins.min.css">
-<!-- Google Font -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-<link rel="stylesheet" href="../../smart-static/assets/css/home.css" />
 </head>
 <body class="hold-transition skin-blue height-auto">
 	<div class="main-header">

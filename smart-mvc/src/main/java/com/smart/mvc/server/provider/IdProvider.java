@@ -1,4 +1,4 @@
-package com.smart.sso.server.provider;
+package com.smart.mvc.server.provider;
 
 import java.util.UUID;
 
@@ -20,4 +20,5 @@ public class IdProvider {
 		UUID uuid = UUID.randomUUID();
 		return uuid.toString().replaceAll("-", "");
 	}
+    
 }

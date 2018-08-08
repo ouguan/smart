@@ -1,7 +1,6 @@
 package com.smart.sso.server.service;
 
 import java.util.List;
-
 import com.smart.mvc.model.Pagination;
 import com.smart.mvc.service.mybatis.Service;
 import com.smart.sso.server.model.App;
@@ -11,7 +10,7 @@ import com.smart.sso.server.model.App;
  * 
  * @author Joe
  */
-public interface AppService extends Service<App, Integer> {
+public interface AppService extends Service<App, String> {
 	
 	/**
 	 * 启用禁用操作
@@ -19,7 +18,7 @@ public interface AppService extends Service<App, Integer> {
 	 * @param idList 应用ID集合
 	 * @return
 	 */
-	public void enable(Boolean isEnable, List<Integer> idList);
+	public void enable(Boolean isEnable, List<String> idList);
 	
 	/**
 	 * 根据名称查询

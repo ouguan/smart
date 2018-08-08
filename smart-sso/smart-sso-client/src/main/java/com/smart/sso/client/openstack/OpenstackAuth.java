@@ -6,7 +6,7 @@ public class OpenstackAuth implements Serializable {
 
     private static final long serialVersionUID = 1106412532325860697L;
     /** 登录ID */
-    private Integer           ssoid;
+    private String            ssoid;
     /** KeyStone登录ID */
     private String            userid;
     /** KeyStone登录名 */
@@ -16,12 +16,12 @@ public class OpenstackAuth implements Serializable {
     /** KeyStone登录工程 */
     private String            projectid;
 
-    public Integer getSsoid() {
+    public String getSsoid() {
 
         return ssoid;
     }
 
-    public void setSsoid(Integer ssoid) {
+    public void setSsoid(String ssoid) {
 
         this.ssoid = ssoid;
     }

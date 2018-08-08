@@ -13,9 +13,9 @@ public class Permission extends PersistentObject {
 	private static final long serialVersionUID = 4368792338865943489L;
 
 	/** 应用ID */
-	private Integer appId;
+	private String appId;
 	/** 父ID */
-	private Integer parentId;
+	private String parentId;
 	/** 图标 */
 	@JSONField(serialize = false)
 	private String icon;
@@ -31,19 +31,19 @@ public class Permission extends PersistentObject {
 	/** 是否启用 */
 	private Boolean isEnable;
 	
-	public Integer getAppId() {
+    public String getAppId() {
 		return this.appId;
 	}
 
-	public void setAppId(Integer appId) {
+	public void setAppId(String appId) {
 		this.appId = appId;
 	}
 
-	public Integer getParentId() {
+	public String getParentId() {
 		return this.parentId;
 	}
 
-	public void setParentId(Integer parentId) {
+	public void setParentId(String parentId) {
 		this.parentId = parentId;
 	}
 	
@@ -103,7 +103,7 @@ public class Permission extends PersistentObject {
 		return icon;
 	}
 
-	public Integer getpId() {
+	public String getpId() {
 		return this.parentId;
 	}
 	

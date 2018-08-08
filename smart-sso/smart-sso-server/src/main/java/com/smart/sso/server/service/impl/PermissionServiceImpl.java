@@ -2,13 +2,10 @@ package com.smart.sso.server.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Resource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.smart.mvc.service.mybatis.impl.ServiceImpl;
 import com.smart.sso.rpc.RpcPermission;
 import com.smart.sso.server.dao.PermissionDao;
@@ -20,7 +17,7 @@ import com.smart.sso.server.service.PermissionService;
 import com.smart.sso.server.service.RolePermissionService;
 
 @Service("permissionService")
-public class PermissionServiceImpl extends ServiceImpl<PermissionDao, Permission, Integer> implements PermissionService {
+public class PermissionServiceImpl extends ServiceImpl<PermissionDao, Permission, String> implements PermissionService {
 
 	@Resource
 	private RolePermissionService rolePermissionService;
@@ -31,18 +28,21 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, Permission
 	@Resource
 	private PermissionJmsService permissionJmsService;
 
-	@Autowired
+	@Override
+    @Autowired
 	public void setDao(PermissionDao dao) {
 		this.dao = dao;
 	}
 
-	public void save(Permission t) {
+	@Override
+    public void save(Permission t) {
 		super.save(t);
 		// JMS通知权限变更
 		permissionJmsService.send(appService.get(t.getAppId()).getCode());
 	}
 
-	public List<Permission> findByAppId(Integer appId, Integer roleId, Boolean isEnable) {
+	@Override
+    public List<Permission> findByAppId(String appId, String roleId, Boolean isEnable) {
 		List<Permission> permissionList = dao.findByAppId(appId, isEnable);
 		if (roleId != null) {
 			List<RolePermission> rolePermissionList = rolePermissionService.findByRoleId(roleId);
@@ -58,9 +58,10 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, Permission
 		return permissionList;
 	}
 
-	@Transactional
-	public void deletePermission(Integer id, Integer appId) {
-		List<Integer> idList = new ArrayList<Integer>();
+	@Override
+    @Transactional
+	public void deletePermission(String id, String appId) {
+		List<String> idList = new ArrayList<String>();
 
 		List<Permission> list = permissionService.findByAppId(appId, null, null);
 		loopSubList(id, idList, list);
@@ -75,7 +76,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, Permission
 	}
 
 	// 递归方法，删除子权限
-	protected void loopSubList(Integer id, List<Integer> idList, List<Permission> list) {
+	protected void loopSubList(String id, List<String> idList, List<Permission> list) {
 		for (Permission p : list) {
 			if (id.equals(p.getParentId())) {
 				idList.add(p.getId());
@@ -84,11 +85,13 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, Permission
 		}
 	}
 
-	public void deleteByAppIds(List<Integer> idList) {
+	@Override
+    public void deleteByAppIds(List<String> idList) {
 		dao.deleteByAppIds(idList);
 	}
 
-	public List<RpcPermission> findListById(String appCode, Integer userId) {
+	@Override
+    public List<RpcPermission> findListById(String appCode, String userId) {
 		return dao.findListById(appCode, userId);
 	}
 }

@@ -13,12 +13,14 @@
 		</if>
 	</select>
 
-	<insert id="insert" parameterType="UserRole" statementType="PREPARED" useGeneratedKeys="true" keyProperty="id">
+	<insert id="insert" parameterType="UserRole" statementType="PREPARED" keyProperty="id">
 		INSERT INTO SYS_RE_USER_ROLE(
+		    id,
 			userId,
 			roleId
 		) 
 		VALUES (
+		    #{id},
 			#{userId},
 			#{roleId}
 		)

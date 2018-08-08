@@ -52,20 +52,31 @@ public class LocalTokenManager extends TokenManager {
 	@Override
     public LoginUser validate(String token) {
 		DummyUser dummyUser = tokenMap.get(token);
-		if (dummyUser == null) {
+		if (dummyUser == null || dummyUser.loginUser.getKeystone() == null) {
 			return null;
 		}
 		
-		// 重新扩展KeyStone Token信息
-        KeyStone keystone = dummyUser.loginUser.getKeystone();
-        Token keyStoneToken = SerializeUtil.bytesToToken(keystone.getUsertoken());
-        keyStoneToken = OSFactory.builderV3()
-                                 .endpoint(ConfigUtils.getProperty("openstack.url"))
-                                 .scopeToProject(Identifier.byName(keystone.getProjectname()),Identifier.byName("default"))
-                                 .token(keyStoneToken.getId())
-                                 .authenticate()
-                                 .getToken();
-        dummyUser.loginUser.getKeystone().setUsertoken(SerializeUtil.tokenToBytes(keyStoneToken));
+		if (dummyUser.loginUser.getKeystone() != null) {
+            // 重新扩展KeyStone Token信息
+		    KeyStone keystone = dummyUser.loginUser.getKeystone();
+		    Token keyStoneToken = SerializeUtil.bytesToToken(keystone.getUsertoken());
+		    if(keystone.getProjectname() != null) {
+		        keyStoneToken = OSFactory.builderV3()
+		                .endpoint(ConfigUtils.getProperty("openstack.url"))
+		                .scopeToProject(Identifier.byName(keystone.getProjectname()),Identifier.byName("default"))
+		                .token(keyStoneToken.getId())
+		                .authenticate()
+		                .getToken();
+		    } else {
+		        keyStoneToken = OSFactory.builderV3()
+                        .endpoint(ConfigUtils.getProperty("openstack.url"))
+                        .token(keyStoneToken.getId())
+                        .authenticate()
+                        .getToken();
+		    }
+            dummyUser.loginUser.getKeystone().setUsertoken(SerializeUtil.tokenToBytes(keyStoneToken));
+        }
+
 		extendExpiredTime(dummyUser);
 		return dummyUser.loginUser;
 	}

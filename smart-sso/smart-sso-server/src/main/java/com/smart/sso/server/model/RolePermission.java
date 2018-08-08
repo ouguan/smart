@@ -12,42 +12,42 @@ public class RolePermission extends PersistentObject {
 	private static final long serialVersionUID = 2817362249993235590L;
 
 	/** 应用ID */
-	private Integer appId;
-	private Integer roleId;
-	private Integer permissionId;
+	private String appId;
+	private String roleId;
+	private String permissionId;
 	
 	public RolePermission() {
 		super();
 	}
 	
-	public RolePermission(Integer appId, Integer roleId, Integer permissionId) {
+	public RolePermission(String appId, String roleId, String permissionId) {
 		super();
 		this.appId = appId;
 		this.roleId = roleId;
 		this.permissionId = permissionId;
 	}
 
-	public Integer getAppId() {
+	public String getAppId() {
 		return this.appId;
 	}
 
-	public void setAppId(Integer appId) {
+	public void setAppId(String appId) {
 		this.appId = appId;
 	}
 
-	public Integer getRoleId() {
+	public String getRoleId() {
 		return this.roleId;
 	}
 
-	public void setRoleId(Integer roleId) {
+	public void setRoleId(String roleId) {
 		this.roleId = roleId;
 	}
 
-	public Integer getPermissionId() {
+	public String getPermissionId() {
 		return this.permissionId;
 	}
 
-	public void setPermissionId(Integer permissionId) {
+	public void setPermissionId(String permissionId) {
 		this.permissionId = permissionId;
 	}
 }

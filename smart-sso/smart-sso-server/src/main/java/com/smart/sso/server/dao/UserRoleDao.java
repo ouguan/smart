@@ -1,9 +1,7 @@
 package com.smart.sso.server.dao;
 
 import java.util.List;
-
 import org.apache.ibatis.annotations.Param;
-
 import com.smart.mvc.dao.mybatis.Dao;
 import com.smart.sso.server.model.UserRole;
 
@@ -12,11 +10,11 @@ import com.smart.sso.server.model.UserRole;
  * 
  * @author Joe
  */
-public interface UserRoleDao extends Dao<UserRole, Integer> {
+public interface UserRoleDao extends Dao<UserRole, String> {
 
-	public UserRole findByUserRoleId(@Param("userId") Integer userId, @Param("roleId") Integer roleId);
+	public UserRole findByUserRoleId(@Param("userId") String userId, @Param("roleId") String roleId);
 
-	public int deleteByRoleIds(@Param("idList") List<Integer> idList);
+	public int deleteByRoleIds(@Param("idList") List<String> idList);
 
-	public int deleteByUserIds(@Param("idList") List<Integer> idList);
+	public int deleteByUserIds(@Param("idList") List<String> idList);
 }

@@ -1,24 +1,21 @@
 package com.smart.sso.server.controller.admin;
 
 import java.util.Date;
-
 import javax.annotation.Resource;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.smart.mvc.model.Pagination;
 import com.smart.mvc.model.Result;
 import com.smart.mvc.model.ResultCode;
+import com.smart.mvc.util.StringUtils;
 import com.smart.mvc.validator.Validator;
 import com.smart.mvc.validator.annotation.ValidateParam;
 import com.smart.sso.server.controller.common.BaseController;
 import com.smart.sso.server.model.App;
 import com.smart.sso.server.service.AppService;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -42,9 +39,9 @@ public class AppController extends BaseController {
 
 	@ApiOperation("新增/修改页")
 	@RequestMapping(value = "/edit", method = RequestMethod.GET)
-	public String edit(@ApiParam(value = "id") Integer id, Model model) {
+	public String edit(@ApiParam(value = "id") String id, Model model) {
 		App app;
-		if (id == null) {
+		if (StringUtils.isBlank(id)) {
 			app = new App();
 		}
 		else {
@@ -66,7 +63,7 @@ public class AppController extends BaseController {
 	@ApiOperation("验证应用编码")
 	@RequestMapping(value = "/validateCode", method = RequestMethod.POST)
 	public @ResponseBody Result validateCode(
-			@ApiParam(value = "id") Integer id,
+			@ApiParam(value = "id") String id,
 			@ApiParam(value = "应用编码", required = true) @ValidateParam({ Validator.NOT_BLANK }) String code) {
 		Result result = Result.createSuccessResult();
 		App db = appService.findByCode(code);
@@ -88,13 +85,13 @@ public class AppController extends BaseController {
 	@ApiOperation("新增/修改提交")
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public @ResponseBody Result save(
-			@ApiParam(value = "id") Integer id,
+			@ApiParam(value = "id") String id,
 			@ApiParam(value = "名称", required = true) @ValidateParam({ Validator.NOT_BLANK }) String name,
 			@ApiParam(value = "应用编码", required = true) @ValidateParam({ Validator.NOT_BLANK }) String code,
 			@ApiParam(value = "是否启用", required = true) @ValidateParam({ Validator.NOT_BLANK }) Boolean isEnable,
 			@ApiParam(value = "排序", required = true) @ValidateParam({ Validator.NOT_BLANK, Validator.INT }) Integer sort) {
 		App app;
-		if (id == null) {
+		if (StringUtils.isBlank(id)) {
 			app = new App();
 			app.setCreateTime(new Date());
 		}
