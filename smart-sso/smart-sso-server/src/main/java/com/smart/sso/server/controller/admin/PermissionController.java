@@ -13,8 +13,8 @@ import com.smart.mvc.validator.Validator;
 import com.smart.mvc.validator.annotation.ValidateParam;
 import com.smart.sso.server.controller.common.BaseController;
 import com.smart.sso.server.model.Permission;
-import com.smart.sso.server.service.AppService;
 import com.smart.sso.server.service.PermissionService;
+import com.smart.sso.server.service.ProjectService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -30,12 +30,12 @@ public class PermissionController extends BaseController {
 	@Resource
 	private PermissionService permissionService;
 	@Resource
-	private AppService appService;
+	private ProjectService projectService;
 
 	@ApiOperation("初始页")
 	@RequestMapping(method = RequestMethod.GET)
 	public String execute(Model model) {
-		model.addAttribute("appList", appService.findByAll(true));
+		model.addAttribute("appList", projectService.findByAll(true));
 		return "/admin/permission";
 	}
 

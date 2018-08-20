@@ -4,8 +4,8 @@ import java.util.List;
 import org.openstack4j.model.common.ActionResponse;
 import org.openstack4j.model.identity.v3.Group;
 import org.openstack4j.model.identity.v3.Role;
+import org.openstack4j.model.identity.v3.Token;
 import org.openstack4j.model.identity.v3.User;
-import com.smart.sso.server.model.KeyStone;
 
 /**
  * Openstack用户服务接口
@@ -46,7 +46,17 @@ public interface OpenstackUserService{
      * @param pwd
      * @return OSClientV3
      */
-    KeyStone login(String ssoid, String username, String password, String projectid);
+    Token login(String username, String password);
+
+    /**
+     * @author: zsh
+     * @descript: 用户登录，传入用户ID，用户名，密码
+     * @param userId
+     * @param userName
+     * @param pwd
+     * @return OSClientV3
+     */
+    Token login(String username, String password, String projectid);
 
     /**
      * @author: zsh

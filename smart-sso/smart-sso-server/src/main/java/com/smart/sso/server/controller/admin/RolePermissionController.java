@@ -10,7 +10,7 @@ import com.smart.mvc.model.Result;
 import com.smart.mvc.validator.Validator;
 import com.smart.mvc.validator.annotation.ValidateParam;
 import com.smart.sso.server.controller.common.BaseController;
-import com.smart.sso.server.service.AppService;
+import com.smart.sso.server.service.ProjectService;
 import com.smart.sso.server.service.RolePermissionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiParam;
 public class RolePermissionController extends BaseController {
 
 	@Resource
-	private AppService appService;
+	private ProjectService projectService;
 	@Resource
 	private RolePermissionService rolePermissionService;
 
@@ -34,7 +34,7 @@ public class RolePermissionController extends BaseController {
 	public String edit(
 			@ApiParam(value = "角色id", required = true) @ValidateParam({ Validator.NOT_BLANK }) String roleId, Model model) {
 		model.addAttribute("roleId", roleId);
-		model.addAttribute("appList", appService.findByAll(true));
+		model.addAttribute("appList", projectService.findByAll(true));
 		return "/admin/rolePermission";
 	}
 	

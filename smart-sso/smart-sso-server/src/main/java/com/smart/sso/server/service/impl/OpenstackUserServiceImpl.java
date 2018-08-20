@@ -19,13 +19,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.smart.mvc.config.ConfigUtils;
 import com.smart.mvc.exception.ValidateException;
-import com.smart.sso.server.model.KeyStone;
+import com.smart.sso.server.controller.common.BaseController;
 import com.smart.sso.server.service.OpenstackUserService;
 import com.smart.sso.server.service.UserService;
-import com.smart.sso.server.util.SerializeUtil;
 
 @Service("openstackUserService")
-public class OpenstackUserServiceImpl extends KeyStoneServiceImpl implements OpenstackUserService {
+public class OpenstackUserServiceImpl implements OpenstackUserService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     
@@ -34,8 +33,8 @@ public class OpenstackUserServiceImpl extends KeyStoneServiceImpl implements Ope
 
     private OSClientV3 getOSClientV3(String userid) {
 
-        byte[] token = findByUserId(userid).getUsertoken();
-        return OSFactory.clientFromToken(SerializeUtil.bytesToToken(token));
+        Token token = BaseController.getLoginToken();
+        return OSFactory.clientFromToken(token);
     }
 
     /**
@@ -74,6 +73,13 @@ public class OpenstackUserServiceImpl extends KeyStoneServiceImpl implements Ope
         return response;
     }
 
+    @Override
+    @Transactional
+    public Token login(String username, String password) throws ValidateException{
+
+        return login(username,password,null);
+    }
+
     /**
      * @author: zsh
      * @descript: 用户登录，传入用户ID，用户名，密码
@@ -84,7 +90,7 @@ public class OpenstackUserServiceImpl extends KeyStoneServiceImpl implements Ope
      */
     @Override
     @Transactional
-    public KeyStone login(String ssoid, String username, String password, String projectid) throws ValidateException{
+    public Token login(String username, String password, String projectid) throws ValidateException{
 
         OSClientV3 userOs;
         String projectname = null;
@@ -108,12 +114,8 @@ public class OpenstackUserServiceImpl extends KeyStoneServiceImpl implements Ope
             userOs = userAuthenticate(username, password, projectname);
         }
         
-        this.dao.resetKeyStoneToken(SerializeUtil.tokenToBytes(userOs.getToken()), projectid, ssoid);
-
         logger.debug("KeyStone Token(过期时间) : " + userOs.getToken().getExpires());
-        KeyStone ret = this.dao.findBySSOId(ssoid);
-        ret.setProjectname(projectname);
-        return ret;
+        return userOs.getToken();
     }
 
     /**
@@ -192,8 +194,6 @@ public class OpenstackUserServiceImpl extends KeyStoneServiceImpl implements Ope
     @Transactional
     public void logout(String username) {
 
-        KeyStone keystone = findByUserName(username);
-        resetKeyStoneToken(null, keystone.getProjectid(), keystone.getSsoid());
     }
 
     @Override

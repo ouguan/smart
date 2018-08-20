@@ -11,9 +11,9 @@ import com.smart.sso.rpc.RpcPermission;
 import com.smart.sso.server.dao.PermissionDao;
 import com.smart.sso.server.model.Permission;
 import com.smart.sso.server.model.RolePermission;
-import com.smart.sso.server.service.AppService;
 import com.smart.sso.server.service.PermissionJmsService;
 import com.smart.sso.server.service.PermissionService;
+import com.smart.sso.server.service.ProjectService;
 import com.smart.sso.server.service.RolePermissionService;
 
 @Service("permissionService")
@@ -24,7 +24,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, Permission
 	@Resource
 	private PermissionService permissionService;
 	@Resource
-	private AppService appService;
+	private ProjectService projectService;
 	@Resource
 	private PermissionJmsService permissionJmsService;
 
@@ -38,7 +38,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, Permission
     public void save(Permission t) {
 		super.save(t);
 		// JMS通知权限变更
-		permissionJmsService.send(appService.get(t.getAppId()).getCode());
+		permissionJmsService.send(projectService.get(t.getAppId()).getCode());
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, Permission
 		verifyRows(dao.deleteById(idList), idList.size(), "权限数据库删除失败");
 		
 		// JMS通知权限变更
-		permissionJmsService.send(appService.get(appId).getCode());
+		permissionJmsService.send(projectService.get(appId).getCode());
 	}
 
 	// 递归方法，删除子权限

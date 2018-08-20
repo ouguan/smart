@@ -11,8 +11,8 @@ import org.springframework.util.CollectionUtils;
 import com.smart.mvc.service.mybatis.impl.ServiceImpl;
 import com.smart.sso.server.dao.RolePermissionDao;
 import com.smart.sso.server.model.RolePermission;
-import com.smart.sso.server.service.AppService;
 import com.smart.sso.server.service.PermissionJmsService;
+import com.smart.sso.server.service.ProjectService;
 import com.smart.sso.server.service.RolePermissionService;
 import com.smart.sso.server.service.RoleService;
 
@@ -22,7 +22,7 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionDao, Ro
 	@Resource
 	private RoleService roleService;
 	@Resource
-	private AppService appService;
+	private ProjectService projectService;
 	@Resource
 	private PermissionJmsService permissionJmsService;
 
@@ -48,7 +48,7 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionDao, Ro
 		}
 
 		// JMS通知权限变更
-		permissionJmsService.send(appService.get(appId).getCode());
+		permissionJmsService.send(projectService.get(appId).getCode());
 	}
 
 	@Override

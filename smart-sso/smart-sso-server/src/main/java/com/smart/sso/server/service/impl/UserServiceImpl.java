@@ -1,47 +1,50 @@
 package com.smart.sso.server.service.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
+import org.openstack4j.api.Builders;
+import org.openstack4j.api.exceptions.AuthenticationException;
+import org.openstack4j.model.identity.v3.Token;
+import org.openstack4j.openstack.OSFactory;
 import org.openstack4j.openstack.identity.v3.domain.KeystoneUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import com.smart.mvc.exception.ValidateException;
+import com.smart.mvc.exception.ServiceException;
 import com.smart.mvc.model.Pagination;
 import com.smart.mvc.model.Result;
 import com.smart.mvc.model.ResultCode;
-import com.smart.mvc.server.provider.PasswordProvider;
 import com.smart.mvc.service.mybatis.impl.ServiceImpl;
+import com.smart.mvc.util.StringUtils;
+import com.smart.sso.server.controller.common.BaseController;
 import com.smart.sso.server.dao.UserDao;
 import com.smart.sso.server.enums.TrueFalseEnum;
-import com.smart.sso.server.model.KeyStone;
+import com.smart.sso.server.model.ProjectUserRole;
 import com.smart.sso.server.model.User;
-import com.smart.sso.server.model.UserRole;
-import com.smart.sso.server.service.AppService;
-import com.smart.sso.server.service.KeyStoneService;
 import com.smart.sso.server.service.OpenstackUserService;
-import com.smart.sso.server.service.UserRoleService;
+import com.smart.sso.server.service.ProjectUserRoleService;
 import com.smart.sso.server.service.UserService;
 
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserDao, User, String> implements UserService {
 
     @Resource
-    private UserRoleService      userRoleService;
+    private ProjectUserRoleService projectUserRoleService;
     @Resource
-    private AppService           appService;
-    @Resource
-    private KeyStoneService      keyStoneService;
-    @Resource
-    private OpenstackUserService openstackUserService;
+    private OpenstackUserService   openstackUserService;
+    @Autowired
+    private UserDao                dao;
 
     @Override
-    @Autowired
     public void setDao(UserDao dao) {
 
         this.dao = dao;
+    }
+
+    @Override
+    public User get(String id) {
+
+        return this.dao.get(id);
     }
 
     @Override
@@ -49,33 +52,24 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User, String> implemen
 
         Result result = Result.createSuccessResult();
         User user = findByAccount(account);
-        KeyStone keystone = keyStoneService.findByUserName(account);
-        
-        // <-- 验证用户信息 -->
-        if (user == null) {
-            result.setCode(ResultCode.ERROR).setMessage("登录名不存在");
-        } else if (!user.getPassword().equals(PasswordProvider.encrypt(password))) {
-            result.setCode(ResultCode.ERROR).setMessage("密码不正确");
-        } else if (TrueFalseEnum.FALSE.getValue().equals(user.getIsEnable())) {
-            result.setCode(ResultCode.ERROR).setMessage("已被用户禁用");
-        } else {
-            // <-- 验证KeyStone -->
-            if (keystone != null) {
-                try {
-                    keystone = openstackUserService.login(user.getId(), account, password, keystone.getProjectid());
-                    keyStoneService.save(keystone);
-                } catch(ValidateException e) {
-                    result.setCode(ResultCode.VALIDATE_ERROR).setMessage(e.getMessage());
-                    return result;
-                }
+        try {
+            // <-- 验证用户是否存在信息 -->
+            if (user == null) {
+                result.setCode(ResultCode.ERROR).setMessage("登录名不存在");
+                return result;
             }
-            
-            user.setLastLoginIp(ip);
-            user.setLoginCount(user.getLoginCount() + 1);
-            user.setLastLoginTime(new Date());
-            user.setKeystone(keystone);
-            dao.update(user);
-            result.setData(user);
+            Token token = openstackUserService.login(account, password, user.getDefault_project_id());
+            // <-- 验证用户信息 -->
+            if (token == null) {
+                result.setCode(ResultCode.ERROR).setMessage("登录验证失败");
+            } else if (TrueFalseEnum.FALSE.getValue().equals(token.getUser().isEnabled())) {
+                result.setCode(ResultCode.ERROR).setMessage("已被用户禁用");
+            } else {
+                result.setData(token);
+            }
+            BaseController.init(user, token);
+        } catch (AuthenticationException e) {
+            result.setCode(ResultCode.ERROR).setMessage("凭据无效");
         }
         return result;
     }
@@ -83,24 +77,66 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User, String> implemen
     @Override
     public void enable(Boolean isEnable, List<String> idList) {
 
-        verifyRows(dao.enable(isEnable, idList), idList.size(), "用户数据库更新失败");
+        int count = 0;
+        Token token = BaseController.getLoginToken();
+        if (token == null) {
+            verifyRows(new ServiceException(), "登录令牌已失效");
+        }
+        try {
+            for (String userId : idList) {
+                KeystoneUser user = (KeystoneUser) OSFactory.clientFromToken(token).identity().users().get(userId);
+                if (user != null) {
+                    user = (KeystoneUser) OSFactory.clientFromToken(token).identity().users().update(user.toBuilder().enabled(isEnable).build());
+                    count++;
+                }
+            }
+        } catch (Exception e) {
+            verifyRows(count, idList.size(), "用户数据库更新失败");
+        }
     }
 
     @Override
-    public void save(User t) {
+    public void save(User user) {
 
-        super.save(t);
+        Token token = BaseController.getLoginToken();
+        if (token == null) {
+            verifyRows(new ServiceException(), "登录令牌已失效");
+        }
+        if (user.getId() == null) {
+            KeystoneUser newUser = (KeystoneUser) OSFactory.clientFromToken(token).identity().users().create(Builders.user().name(user.getAccount()).description(user.getDescription()).password(user.getPassword()).email(user.getEmail()).domainId(user.getDomain_id()).build());
+            user.setId(newUser.getId());
+        }
+        this.dao.updateLogin(user.getExtra(), user.getId());
     }
 
     @Override
     public void resetPassword(String password, List<String> idList) {
 
-        verifyRows(dao.resetPassword(password, idList), idList.size(), "用户密码数据库重置失败");
+        int count = 0;
+        Token token = BaseController.getLoginToken();
+        if (token == null) {
+            verifyRows(new ServiceException(), "登录令牌已失效");
+        }
+        try {
+            for (String userId : idList) {
+                KeystoneUser user = (KeystoneUser) OSFactory.clientFromToken(token).identity().users().get(userId);
+                if (user != null) {
+                    user = (KeystoneUser) OSFactory.clientFromToken(token).identity().users().update(user.toBuilder().password(password).build());
+                    count++;
+                }
+            }
+        } catch (Exception e) {
+            verifyRows(count, idList.size(), "用户密码数据库重置失败");
+        }
     }
 
     @Override
     public Pagination<User> findPaginationByAccount(String account, Pagination<User> p) {
 
+        Token token = BaseController.getLoginToken();
+        if (token == null) {
+            verifyRows(new ServiceException(), "登录令牌已失效");
+        }
         dao.findPaginationByAccount(account, p);
         return p;
     }
@@ -110,56 +146,69 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User, String> implemen
 
         return dao.findByAccount(account);
     }
-    
+
     @Override
-    @Transactional
     public void deleteById(List<String> idList) {
 
-        userRoleService.deleteByUserIds(idList);
-        verifyRows(dao.deleteById(idList), idList.size(), "用户数据库删除失败");
+        int count = 0;
+        projectUserRoleService.deleteByUserIds(idList);
+        Token token = BaseController.getLoginToken();
+        if (token == null) {
+            verifyRows(new ServiceException(), "登录令牌已失效");
+        }
+        try {
+            for (String userId : idList) {
+                OSFactory.clientFromToken(token).identity().users().delete(userId);
+                count++;
+            }
+        } catch (Exception e) {
+            verifyRows(count, idList.size(), "用户数据库删除失败");
+        }
     }
 
     @Override
     public void updatePassword(String id, String newPassword) {
 
-        User user = get(id);
-        user.setPassword(PasswordProvider.encrypt(newPassword));
-        update(user);
+        Token token = BaseController.getLoginToken();
+        if (token == null) {
+            verifyRows(new ServiceException(), "登录令牌已失效");
+        }
+        try {
+            KeystoneUser user = (KeystoneUser) OSFactory.clientFromToken(token).identity().users().get(id);
+            if (user != null) {
+                user = (KeystoneUser) OSFactory.clientFromToken(token).identity().users().update(user.toBuilder().password(newPassword).build());
+            }
+        } catch (Exception e) {
+            verifyRows(0, 1, "用户密码数据库重置失败");
+        }
     }
 
     @Override
     public void save(User user, List<String> roleIdList) {
 
-        // 创建Openstack  KeyStone用户
-        KeystoneUser keyStoneUser = (KeystoneUser) KeystoneUser.builder()
-                .name(user.getAccount())
-                .password(user.getPassword())
-                .enabled(user.getIsEnable())
-                .defaultProjectId(user.getKeystone().getProjectid())
-                .build();
-        openstackUserService.createUser(user.getKeystone().getUserid(), keyStoneUser);
-        
         // 创建SSO用户
-        user.setPassword(PasswordProvider.encrypt(user.getPassword()));// 对密码进行加密
         save(user);
-        
-        // SSO用户关联KeyStone用户
-        KeyStone keyStone = new KeyStone();
-        keyStone.setSsoid(findByAccount(user.getAccount()).getId());
-        keyStone.setUserid(user.getKeystone().getUserid());
-        keyStone.setUsername(user.getAccount());
-        keyStone.setProjectid(user.getKeystone().getProjectid());
-        keyStone.setProjectname(user.getKeystone().getProjectname());
-        keyStoneService.save(keyStone);
-        
-        List<UserRole> userRoleList = new ArrayList<UserRole>();
-        UserRole bean;
-        for (String roleId : roleIdList) {
-            bean = new UserRole();
-            bean.setUserId(user.getId());
-            bean.setRoleId(roleId);
-            userRoleList.add(bean);
+        // 更新用户信息
+        Token token = BaseController.getLoginToken();
+        if (token == null) {
+            verifyRows(new ServiceException(), "登录令牌已失效");
         }
-        userRoleService.allocate(user.getId(), userRoleList);
+        KeystoneUser currentUser = (KeystoneUser) OSFactory.clientFromToken(token).identity().users().get(user.getId());
+        OSFactory.clientFromToken(token).identity().users().update(currentUser.toBuilder().name(user.getAccount()).description(user.getDescription()).email(user.getEmail()).enabled(user.getIsEnable()).build());
+        // 更新用户密码
+        if (StringUtils.isBlank(user.getPassword())) {
+            updatePassword(user.getId(), user.getPassword());
+        }
+        // 更新用户角色信息
+        List<ProjectUserRole> projectUserRoleList = new ArrayList<ProjectUserRole>();
+        ProjectUserRole bean;
+        for (String roleId : roleIdList) {
+            bean = new ProjectUserRole();
+            bean.setActor_id(user.getId());
+            bean.setTarget_id(null);
+            bean.setRole_id(roleId);
+            projectUserRoleList.add(bean);
+        }
+        projectUserRoleService.allocate(projectUserRoleList);
     }
 }

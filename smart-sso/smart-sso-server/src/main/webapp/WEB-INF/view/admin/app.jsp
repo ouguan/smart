@@ -73,12 +73,19 @@
 				],
 				columns : [
 			        {field:'id', hide : true},
-			        {field:'isEnable', hide : true},
+			        {field:'enabled', hide : true},
 			        {field:'name', title:'名称', align:'left'},
 			        {field:'code', title:'编码', align:'left', mobileHide : true},
 			        {field:'sort', title:'排序', mobileHide : true},
+			        {field:'isDomainStr', title:'是否Domain', replace : function (d){
+				        if(d.is_domain)
+				        	return "<span class='label label-sm label-important'>" + d.isDomainStr + 	"</span>";
+			        	else
+			        		return "<span class='label label-sm label-info'>" + d.isDomainStr + "</span>";
+			        }},
+			        {field:'domain_id', title:'Domain ID', mobileHide : true},
 			        {field:'isEnableStr', title:'是否启用', replace : function (d){
-				        if(d.isEnable)
+				        if(d.enabled)
 				        	return "<span class='label label-sm label-success'>" + d.isEnableStr + 	"</span>";
 			        	else
 			        		return "<span class='label label-sm label-warning'>" + d.isEnableStr + "</span>";
@@ -94,7 +101,7 @@
 							$table.ajaxEnable({url : "${_path}/admin/app/enable"}, false);
 						},
 						show : function(d){
-							return d.isEnable;
+							return d.enabled;
 						}
 					},
 					{text : '启用', clazz : 'green', icon : 'fa fa-unlock', permission : '/admin/app/enable', 
@@ -102,7 +109,7 @@
 							$table.ajaxEnable({url : "${_path}/admin/app/enable"}, true);
 						},
 						show : function(d){
-							return !d.isEnable;
+							return !d.enabled;
 						}
 					},
 					{text : '删除', clazz : 'red', icon : 'fa fa-trash-o', permission : '/admin/app/delete', handler : function(d, i){

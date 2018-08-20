@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <jsp:include page="../common/common.jsp">
-	<jsp:param name="title" value="用户"/>
+	<jsp:param name="title" value="角色"/>
 </jsp:include>
 
 <div class="page-header">

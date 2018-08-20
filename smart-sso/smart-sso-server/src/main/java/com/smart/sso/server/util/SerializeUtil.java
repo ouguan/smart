@@ -44,6 +44,21 @@ public final class SerializeUtil {
         }
         return userToken;
     }
+    
+    public static String bytesToString(byte[] tokenBytes) {
+
+        String str = null;
+        try {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(tokenBytes);
+            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+            str = (String) objectInputStream.readObject();
+        } catch (ClassNotFoundException e) {
+            logger.error(e.getMessage(), e);
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return str;
+    }
 
     /**
      * 

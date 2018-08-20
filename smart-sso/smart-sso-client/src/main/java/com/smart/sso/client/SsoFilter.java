@@ -56,7 +56,7 @@ public class SsoFilter extends ClientFilter {
 	private void invokeAuthInfoInSession(HttpServletRequest request, String token) throws IOException {
 		RpcUser rpcUser = authenticationRpcService.findAuthInfo(token);
 		if (rpcUser != null) {
-			SessionUtils.setSessionUser(request, new SessionUser(token, rpcUser.getAccount(), rpcUser.getKeystone()));
+			SessionUtils.setSessionUser(request, new SessionUser(token, rpcUser.getAccount(), rpcUser.getToken()));
 		}
 	}
 

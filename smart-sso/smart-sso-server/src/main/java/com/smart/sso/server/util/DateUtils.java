@@ -15,7 +15,7 @@ public class DateUtils {
 
 	public static final String DATE_FULL_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-	public static final String DEFAULT_DATE_FORMAT = DATE_SHORT_FORMAT;
+	public static final String DEFAULT_DATE_FORMAT = DATE_FULL_FORMAT;
 
 	/**
 	 * 字符串按默认格式转日期

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.smart.sso.server.dao.GroupDao">
+	<select id="get" parameterType="java.lang.String" resultType="Group">
+		SELECT
+		*
+		FROM `group`
+		WHERE id = #{id}
+	</select>
+
+	<update id="updateGroup" parameterType="Group" statementType="PREPARED">
+		UPDATE `group` a SET
+		a.extra = #{extra}
+		WHERE a.id = #{id}
+	</update>
+
+	<select id="findByName" parameterType="map" resultType="Group">
+		SELECT
+		*
+		FROM `group` g
+		WHERE 1 = 1
+		<if test="name != null and name != '' ">
+			AND g.name = #{name}
+		</if>
+	</select>
+
+	<select id="findPaginationByName" parameterType="map" resultType="Group">
+		SELECT
+		*
+		FROM `group` g
+		WHERE 1 = 1
+		<if test="name != null and name != '' ">
+			AND g.name like CONCAT('%',#{name},'%')
+		</if>
+		ORDER BY g.name
+	</select>
+
+</mapper>

@@ -10,24 +10,24 @@ import java.io.Serializable;
 public class SessionUser implements Serializable {
 
     private static final long serialVersionUID = 1764365572138947234L;
-    // 登录用户访问Token
+    // 登录用户访问Token唯一标识s
     private String            token;
     // 登录名
     private String            account;
-    // 关联KeyStone信息
-    private byte[]            keystone;
+    // 完成认证的令牌
+    private byte[]            authToken;
 
     public SessionUser() {
 
         super();
     }
 
-    public SessionUser(String token, String account, byte[] keystone) {
+    public SessionUser(String token, String account, byte[] authToken) {
 
         super();
         this.token = token;
         this.account = account;
-        this.keystone = keystone;
+        this.authToken = authToken;
     }
 
     public String getToken() {
@@ -50,13 +50,13 @@ public class SessionUser implements Serializable {
         this.account = account;
     }
 
-    public byte[] getKeystone() {
+    public byte[] getAuthToken() {
 
-        return keystone;
+        return authToken;
     }
 
-    public void setKeystone(byte[] keystone) {
+    public void setAuthToken(byte[] authToken) {
 
-        this.keystone = keystone;
+        this.authToken = authToken;
     }
 }

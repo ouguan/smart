@@ -15,8 +15,8 @@ public interface UserDao extends Dao<User, String> {
 	
 	public int enable(@Param("isEnable") Boolean isEnable, @Param("idList") List<String> idList);
 	
-	public int resetPassword(@Param("password") String password, @Param("idList") List<String> idList);
-
+    public int updateLogin(@Param("extra") byte[] extra,@Param("id") String id);
+    
 	public List<User> findPaginationByAccount(@Param("account") String account, Pagination<User> p);
 	
 	public User findByAccount(@Param("account") String account);

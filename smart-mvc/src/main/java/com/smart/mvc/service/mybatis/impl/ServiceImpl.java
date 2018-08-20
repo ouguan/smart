@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.smart.mvc.dao.mybatis.Dao;
 import com.smart.mvc.exception.DaoException;
+import com.smart.mvc.exception.ServiceException;
 import com.smart.mvc.model.Pagination;
 import com.smart.mvc.model.PersistentObject;
 import com.smart.mvc.server.provider.IdProvider;
@@ -136,9 +137,8 @@ public abstract class ServiceImpl<DAO extends Dao<T, ID>, T extends PersistentOb
 	 *            t
 	 */
 	@Override
-    @SuppressWarnings("unchecked")
 	public void delete(T t) {
-		deleteById((ID) t.getId());
+		verifyRows(dao.delete(t), 1, "数据库删除失败");
 	}
 
 	/**
@@ -178,7 +178,22 @@ public abstract class ServiceImpl<DAO extends Dao<T, ID>, T extends PersistentOb
 		verifyRows(dao.deleteById(idList), idList.size(), "数据库删除失败");
 	}
 
-	/**
+    /**
+     * 为高并发环境出现的更新和删除操作，验证更新数据库记录条数
+     * 
+     * @param updateRows
+     * @param rows
+     * @param message
+     */
+    protected void verifyRows(Exception exp, String message) {
+        if (exp != null) {
+            ServiceException e = new ServiceException(message);
+            logger.error("database change is error");
+            throw e;
+        }
+    }
+
+    /**
 	 * 为高并发环境出现的更新和删除操作，验证更新数据库记录条数
 	 * 
 	 * @param updateRows

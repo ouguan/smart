@@ -2,6 +2,7 @@ package com.smart.sso.server.common;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import org.openstack4j.model.identity.v3.Token;
 
 /**
  * 令牌管理抽象
@@ -36,26 +37,27 @@ public abstract class TokenManager {
 	 */
 	public abstract void verifyExpired();
 
-	/**
-	 * 用户授权成功后将授权信息存入
-	 * 
-	 * @param token
-	 * @param loginUser
-	 */
-	public abstract void addToken(String token, LoginUser loginUser);
+    /**
+     * 用户授权成功后将授权信息存入
+     * 
+     * @param token
+     * @param loginUser
+     */
+    public abstract void addToken(String token, Token keyStoneToken);
 
-	/**
-	 * 验证令牌有效性,有效则延长session生命周期
-	 * 
-	 * @param token
-	 * @return
-	 */
-	public abstract LoginUser validate(String token);
+    /**
+     * 验证令牌有效性,有效则延长session生命周期
+     * 
+     * @param token
+     * @return
+     */
+    public abstract Token validate(String token);
 
-	/**
-	 * 移除令牌
-	 * 
-	 * @param token
-	 */
-	public abstract void remove(String token);
+    /**
+     * 移除令牌
+     * 
+     * @param token
+     */
+    public abstract void remove(String token);
+
 }

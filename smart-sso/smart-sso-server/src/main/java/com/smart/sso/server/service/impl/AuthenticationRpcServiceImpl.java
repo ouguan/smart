@@ -3,15 +3,14 @@ package com.smart.sso.server.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Resource;
+import org.openstack4j.model.identity.v3.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import com.smart.mvc.util.StringUtils;
-import com.smart.sso.client.openstack.OpenstackAuth;
 import com.smart.sso.rpc.AuthenticationRpcService;
 import com.smart.sso.rpc.RpcPermission;
 import com.smart.sso.rpc.RpcUser;
-import com.smart.sso.server.common.LoginUser;
 import com.smart.sso.server.common.TokenManager;
 import com.smart.sso.server.service.PermissionService;
 import com.smart.sso.server.service.UserService;
@@ -30,45 +29,37 @@ public class AuthenticationRpcServiceImpl implements AuthenticationRpcService {
     private TokenManager      tokenManager;
 
     @Override
-    public boolean validate(String token) {
+    public boolean validate(String key) {
 
-        return tokenManager.validate(token) != null;
+        return tokenManager.validate(key) != null;
     }
     
     @Override
-    public void remove(String token) {
+    public void remove(String key) {
 
-        tokenManager.remove(token);
+        tokenManager.remove(key);
     }
 
     @Override
-    public RpcUser findAuthInfo(String token) {
+    public RpcUser findAuthInfo(String key) {
 
-        LoginUser user = tokenManager.validate(token);
-        OpenstackAuth keystone;
-        if (user != null) {
-            keystone = new OpenstackAuth();
-            keystone.setSsoid(user.getKeystone().getSsoid());
-            keystone.setUserid(user.getKeystone().getUserid());
-            keystone.setUsername(user.getKeystone().getUsername());
-            keystone.setProjectid(user.getKeystone().getProjectid());
-            keystone.setUsertoken(user.getKeystone().getUsertoken());
-            
-            logger.debug("KeyStone Token(过期时间) : "+SerializeUtil.bytesToToken(user.getKeystone().getUsertoken()).getExpires());
-            return new RpcUser(user.getAccount(), SerializeUtil.serialByte(keystone));
+        Token token = tokenManager.validate(key);
+        if (token != null) {
+            logger.debug("KeyStone Token(过期时间) : "+ token.getExpires());
+            return new RpcUser(token.getUser().getName(), SerializeUtil.serialByte(token));
         }
         return null;
     }
 
     @Override
-    public List<RpcPermission> findPermissionList(String token, String appCode) {
+    public List<RpcPermission> findPermissionList(String key, String appCode) {
 
-        if (StringUtils.isBlank(token)) {
+        if (StringUtils.isBlank(key)) {
             return permissionService.findListById(appCode, null);
         } else {
-            LoginUser user = tokenManager.validate(token);
-            if (user != null) {
-                return permissionService.findListById(appCode, user.getUserId());
+            Token token = tokenManager.validate(key);
+            if (token != null) {
+                return permissionService.findListById(appCode, token.getUser().getId());
             } else {
                 return new ArrayList<RpcPermission>(0);
             }

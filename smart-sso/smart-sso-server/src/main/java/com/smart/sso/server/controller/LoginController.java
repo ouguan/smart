@@ -2,10 +2,12 @@ package com.smart.sso.server.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Date;
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.openstack4j.model.identity.v3.Token;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,7 +18,6 @@ import com.smart.mvc.util.StringUtils;
 import com.smart.mvc.validator.Validator;
 import com.smart.mvc.validator.annotation.ValidateParam;
 import com.smart.sso.client.SsoFilter;
-import com.smart.sso.server.common.LoginUser;
 import com.smart.sso.server.common.TokenManager;
 import com.smart.sso.server.controller.common.BaseController;
 import com.smart.sso.server.model.User;
@@ -58,21 +59,27 @@ public class LoginController extends BaseController {
     public String login(@ApiParam(value = "返回链接", required = true) @ValidateParam({ Validator.NOT_BLANK }) String backUrl, @ApiParam(value = "登录名", required = true) @ValidateParam({ Validator.NOT_BLANK }) String account, @ApiParam(value = "密码", required = true) @ValidateParam({ Validator.NOT_BLANK }) String password, HttpServletRequest request, HttpServletResponse response)
             throws UnsupportedEncodingException {
 
-        /*if (!CaptchaHelper.validate(request, captcha)) {
-            request.setAttribute("errorMessage", "验证码不正确");
-            return goLoginPath(backUrl, request);
-        }*/
         Result result = userService.login(getIpAddr(request), account, password);
         if (!result.getCode().equals(ResultCode.SUCCESS)) {
             request.setAttribute("errorMessage", result.getMessage());
             return goLoginPath(backUrl, request);
         } else {
-            User user = (User) result.getData();
-            LoginUser loginUser = new LoginUser(user.getId(), user.getAccount(), user.getKeystone());
+            Token keyStoneToken = (Token) result.getData();
             String token = CookieUtils.getCookie(request, TokenManager.TOKEN);
             if (StringUtils.isBlank(token) || tokenManager.validate(token) == null) {// 没有登录的情况
-                token = createToken(loginUser);
+                
+                token = createToken(keyStoneToken);
                 addTokenInCookie(token, request, response);
+                
+                init(keyStoneToken, request);
+                
+                User user = getLoginUser();
+                user.setLoginCount(user.getLoginCount() + 1);
+                user.setLastLoginIp(getIpAddr(request));
+                user.setLastLoginTime(new Date());
+                user.updateExtra();
+                
+                userService.save(user);
             }
             // 跳转到原请求
             backUrl = URLDecoder.decode(backUrl, "utf-8");
@@ -98,12 +105,12 @@ public class LoginController extends BaseController {
         return sbf.toString();
     }
 
-    private String createToken(LoginUser loginUser) {
+    private String createToken(Token keyStoneToken) {
 
         // 生成token
         String token = IdProvider.createUUIDId();
         // 缓存中添加token对应User
-        tokenManager.addToken(token, loginUser);
+        tokenManager.addToken(token, keyStoneToken);
         return token;
     }
 

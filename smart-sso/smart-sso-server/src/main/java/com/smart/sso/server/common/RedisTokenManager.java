@@ -2,8 +2,8 @@ package com.smart.sso.server.common;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-
 import javax.annotation.Resource;
+import org.openstack4j.model.identity.v3.Token;
 
 /**
  * 分布式环境令牌管理
@@ -18,21 +18,21 @@ public class RedisTokenManager extends TokenManager {
 	private Set<String> tokenSet = new CopyOnWriteArraySet<String>();
 
 	@Resource
-	private RedisCache<LoginUser> redisCache;
+	private RedisCache<Token> redisCache;
 
 	@Override
-	public void addToken(String token, LoginUser loginUser) {
-		redisCache.set(token, loginUser, tokenTimeout);
+	public void addToken(String key, Token token) {
+		redisCache.set(key, token, tokenTimeout);
 	}
 
 	@Override
-	public LoginUser validate(String token) {
-		LoginUser loginUser = redisCache.get(token);
-		if (loginUser != null && !tokenSet.contains(token)) {
-			tokenSet.add(token);
-			addToken(token, loginUser);
+	public Token validate(String key) {
+		Token token = redisCache.get(key);
+		if (token != null && !tokenSet.contains(key)) {
+			tokenSet.add(key);
+			addToken(key, token);
 		}
-		return loginUser;
+		return token;
 	}
 
 	@Override

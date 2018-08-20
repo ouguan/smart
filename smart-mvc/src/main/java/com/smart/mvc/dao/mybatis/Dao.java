@@ -46,7 +46,15 @@ public interface Dao<T, ID extends Serializable> {
 	 */
 	public int update(T t);
 	
-	/**
+    /**
+     * 删除实体
+     * 
+     * @param T
+     *            t
+     */
+    public int delete(T t);
+
+    /**
 	 * 删除实体
 	 * 
 	 * @param T

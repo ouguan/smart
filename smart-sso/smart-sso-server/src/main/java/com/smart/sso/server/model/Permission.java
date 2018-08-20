@@ -2,6 +2,7 @@ package com.smart.sso.server.model;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.smart.mvc.model.PersistentObject;
+import com.smart.mvc.util.StringUtils;
 
 /**
  * 权限
@@ -10,111 +11,135 @@ import com.smart.mvc.model.PersistentObject;
  */
 public class Permission extends PersistentObject {
 
-	private static final long serialVersionUID = 4368792338865943489L;
+    private static final long serialVersionUID = 4368792338865943489L;
+    /** 应用ID */
+    private String            appId;
+    /** 父ID */
+    @JSONField(serialize = false)
+    private String            parentId;
+    /** 图标 */
+    @JSONField(serialize = false)
+    private String            icon;
+    /** 名称 */
+    private String            name;
+    /** 权限URL */
+    @JSONField(serialize = false)
+    private String            url;
+    /** 排序 */
+    private Integer           sort             = Integer.valueOf(1);
+    /** 是否菜单 */
+    private Boolean           isMenu;
+    /** 是否启用 */
+    private Boolean           isEnable;
 
-	/** 应用ID */
-	private String appId;
-	/** 父ID */
-	private String parentId;
-	/** 图标 */
-	@JSONField(serialize = false)
-	private String icon;
-	/** 名称 */
-	private String name;
-	/** 权限URL */
-	@JSONField(serialize = false)
-	private String url;
-	/** 排序 */
-	private Integer sort = Integer.valueOf(1);
-	/** 是否菜单 */
-	private Boolean isMenu;
-	/** 是否启用 */
-	private Boolean isEnable;
-	
     public String getAppId() {
-		return this.appId;
-	}
 
-	public void setAppId(String appId) {
-		this.appId = appId;
-	}
+        return this.appId;
+    }
 
-	public String getParentId() {
-		return this.parentId;
-	}
+    public void setAppId(String appId) {
 
-	public void setParentId(String parentId) {
-		this.parentId = parentId;
-	}
-	
-	public String getIcon() {
-		return icon;
-	}
+        this.appId = appId;
+    }
 
-	public void setIcon(String icon) {
-		this.icon = icon;
-	}
+    public String getParentId() {
 
-	public String getName() {
-		return this.name;
-	}
+        return this.parentId;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getUrl() {
-		return url;
-	}
+    public void setParentId(String parentId) {
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+        this.parentId = parentId;
+        if (StringUtils.isBlank(parentId)) {
+            this.parentId = null;
+        }
+    }
 
-	public Integer getSort() {
-		return this.sort;
-	}
+    public String getIcon() {
 
-	public void setSort(Integer sort) {
-		this.sort = sort;
-	}
+        return icon;
+    }
 
-	public Boolean getIsMenu() {
-		return this.isMenu;
-	}
+    public void setIcon(String icon) {
 
-	public void setIsMenu(Boolean isMenu) {
-		this.isMenu = isMenu;
-	}
+        this.icon = icon;
+    }
 
-	public Boolean getIsEnable() {
-		return this.isEnable;
-	}
+    public String getName() {
 
-	public void setIsEnable(Boolean isEnable) {
-		this.isEnable = isEnable;
-	}
-	
-	public String getUrlStr() {
-		return url;
-	}
-	
-	public String getPermissionIcon() {
-		return icon;
-	}
+        return this.name;
+    }
 
-	public String getpId() {
-		return this.parentId;
-	}
-	
-	/** 以下为显示辅助参数 */
-	private boolean checked = false;
+    public void setName(String name) {
 
-	public boolean isChecked() {
-		return checked;
-	}
+        this.name = name;
+    }
 
-	public void setChecked(boolean checked) {
-		this.checked = checked;
-	}
+    public String getUrl() {
+
+        return url;
+    }
+
+    public void setUrl(String url) {
+
+        this.url = url;
+    }
+
+    public Integer getSort() {
+
+        return this.sort;
+    }
+
+    public void setSort(Integer sort) {
+
+        this.sort = sort;
+    }
+
+    public Boolean getIsMenu() {
+
+        return this.isMenu;
+    }
+
+    public void setIsMenu(Boolean isMenu) {
+
+        this.isMenu = isMenu;
+    }
+
+    public Boolean getIsEnable() {
+
+        return this.isEnable;
+    }
+
+    public void setIsEnable(Boolean isEnable) {
+
+        this.isEnable = isEnable;
+    }
+
+    public String getUrlStr() {
+
+        return url;
+    }
+
+    public String getPermissionIcon() {
+
+        return icon;
+    }
+
+    public String getpId() {
+
+        return this.parentId;
+    }
+
+    /** 以下为显示辅助参数 */
+    private boolean checked = false;
+
+    public boolean isChecked() {
+
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+
+        this.checked = checked;
+    }
 }

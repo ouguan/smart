@@ -1,6 +1,11 @@
 package com.smart.sso.server.util;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -147,5 +152,75 @@ public class JsonUtils {
     private static JavaType getCollectionType(Class<?> collectionClass, Class<?> ... elementClasses) {
 
         return mapper.getTypeFactory().constructParametricType(collectionClass, elementClasses);
+    }
+
+    /**
+     * @Title: combineSydwCore
+     * @Description: 该方法是用于相同对象不同属性值的合并，如果两个相同对象中同一属性都有值，那么sourceBean中的值会覆盖tagetBean重点的值
+     * @author: WangLongFei
+     * @date: 2017年12月26日 下午1:53:19
+     * @param sourceBean
+     *            被提取的对象bean
+     * @param targetBean
+     *            用于合并的对象bean
+     * @return targetBean 合并后的对象
+     * @return: Object
+     */
+    public static Object mergeBean(Object sourceBean, Object targetBean) {
+
+        Class<? extends Object> sourceBeanClass = sourceBean.getClass();
+        Class<? extends Object> targetBeanClass = targetBean.getClass();
+        Field[] sourceFields = sourceBeanClass.getDeclaredFields();
+        Field[] targetFields = targetBeanClass.getDeclaredFields();
+        for (int i = 0; i < sourceFields.length; i++) {
+            Field sourceField = sourceFields[i];
+            sourceField.setAccessible(true);
+            if (Modifier.isStatic(sourceField.getModifiers())) {
+                continue;
+            }
+            try {
+                if (!(sourceField.get(sourceBean) == null) && !"serialVersionUID".equals(sourceField.getName().toString())) {
+                    Field targetField = isPropExist(sourceField, targetFields);
+                    if(targetField==null) {
+                        
+                    }
+                    targetField.setAccessible(true);
+                    targetField.set(targetBean, sourceField.get(sourceBean));
+                }
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return targetBean;
+    }
+
+    public static <T> Object merge(T target, T destination) throws Exception {
+
+        BeanInfo beanInfo = Introspector.getBeanInfo(destination.getClass());
+        // Iterate over all the attributes
+        for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
+            // Only copy writable attributes
+            if (descriptor.getReadMethod() != null) {
+                Object originalValue = descriptor.getReadMethod().invoke(target);
+                // Only copy values values where the destination values is null
+                if (originalValue == null) {
+                    Object defaultValue = descriptor.getReadMethod().invoke(destination);
+                    descriptor.getWriteMethod().invoke(target, defaultValue);
+                }
+            }
+        }
+        return beanInfo;
+    }
+
+    public static Field isPropExist(Field field, Field[] fields) {
+
+        Field ret = null;
+        for (int i = 0; i < fields.length; i++) {
+            if (fields[i].getName().toString().equals(field.getName().toString())) {
+                ret = fields[i];
+                break;
+            }
+        }
+        return ret;
     }
 }

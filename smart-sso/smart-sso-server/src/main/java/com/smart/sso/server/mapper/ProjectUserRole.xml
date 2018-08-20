@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.smart.sso.server.dao.ProjectUserRoleDao">
+	<select id="findByProjectUserRoleId" parameterType="map" resultType="ProjectUserRole">   
+		SELECT * 
+     	FROM assignment a
+     	WHERE 1 = 1
+     	<if test="userId != null and userId != '' ">
+			AND a.actor_id = #{userId} 
+		</if>
+     	<if test="projectId != null and projectId != '' ">
+			AND a.target_id = #{projectId} 
+		</if>
+		<if test="roleId != null and roleId != '' ">
+			AND a.role_id = #{roleId} 
+		</if>
+	</select>
+
+	<insert id="insert" parameterType="ProjectUserRole" statementType="PREPARED" keyProperty="id">
+		INSERT INTO assignment(
+		    type,
+		    actor_id,
+			target_id,
+			role_id
+		) 
+		VALUES (
+		    #{type}
+		    #{actor_id},
+			#{target_id},
+			#{role_id}
+		)
+	</insert>
+
+	<delete id="deleteByAssignmentIds" parameterType="map" statementType="PREPARED">
+		DELETE FROM assignment
+		WHERE 1 = 1
+		<if test="userId != null and userId != '' ">
+			AND a.actor_id = #{userId} 
+		</if>
+     	<if test="projectId != null and projectId != '' ">
+			AND a.target_id = #{projectId} 
+		</if>
+		<if test="roleId != null and roleId != '' ">
+			AND a.role_id = #{roleId} 
+		</if>
+	</delete>
+	
+	<delete id="deleteByProjectIds" parameterType="map" statementType="PREPARED">
+		DELETE FROM assignment
+		WHERE 1 = 1
+		<if test="idList != null">
+			AND target_id in <foreach collection="idList" item="item" open="(" separator="," close=")">#{item}</foreach>
+		</if>
+	</delete>
+	
+	<delete id="deleteByRoleIds" parameterType="map" statementType="PREPARED">
+		DELETE FROM assignment
+		WHERE 1 = 1
+		<if test="idList != null">
+			AND role_id in <foreach collection="idList" item="item" open="(" separator="," close=")">#{item}</foreach>
+		</if>
+	</delete>
+	
+	<delete id="deleteByUserIds" parameterType="map" statementType="PREPARED">
+		DELETE FROM assignment
+		WHERE 1 = 1
+		<if test="idList != null">
+			AND actor_id in <foreach collection="idList" item="item" open="(" separator="," close=")">#{item}</foreach>
+		</if>
+	</delete>
+</mapper>
