@@ -8,6 +8,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.openstack4j.model.identity.v3.Token;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -37,6 +39,7 @@ public class LoginController extends BaseController {
 
     // 登录页
     private static final String  LOGIN_PATH = "/login";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     @Resource
     private TokenManager         tokenManager;
     @Resource
@@ -59,7 +62,9 @@ public class LoginController extends BaseController {
     public String login(@ApiParam(value = "返回链接", required = true) @ValidateParam({ Validator.NOT_BLANK }) String backUrl, @ApiParam(value = "登录名", required = true) @ValidateParam({ Validator.NOT_BLANK }) String account, @ApiParam(value = "密码", required = true) @ValidateParam({ Validator.NOT_BLANK }) String password, HttpServletRequest request, HttpServletResponse response)
             throws UnsupportedEncodingException {
 
-        Result result = userService.login(getIpAddr(request), account, password);
+        logger.debug("请求项目的名称：" + request.getContextPath());
+        
+        Result result = userService.login(getIpAddr(request), account, password, getAppCode(request));
         if (!result.getCode().equals(ResultCode.SUCCESS)) {
             request.setAttribute("errorMessage", result.getMessage());
             return goLoginPath(backUrl, request);

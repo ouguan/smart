@@ -119,10 +119,12 @@ public class User extends PersistentObject {
 
     public Integer getLoginCount() {
 
-        if (StringUtils.isBlank((String) serialExtra().get("loginCount"))) {
-            loginCount = 0;
-        } else {
-            loginCount = Integer.valueOf((String) serialExtra().get("loginCount"));
+        if(loginCount == 0) {
+            if (StringUtils.isBlank((String) serialExtra().get("loginCount"))) {
+                loginCount = 0;
+            } else {
+                loginCount = Integer.valueOf((String) serialExtra().get("loginCount"));
+            }
         }
         return loginCount;
     }

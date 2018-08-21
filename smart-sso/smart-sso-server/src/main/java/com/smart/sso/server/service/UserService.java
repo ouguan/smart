@@ -24,7 +24,7 @@ public interface UserService extends Service<User, String> {
 	 * @throws AuthenticationException
 	 *             认证异常
 	 */
-	public Result login(String ip, String account, String password);
+	public Result login(String ip, String account, String password, String server);
 	
 	/**
 	 * 启用禁用操作

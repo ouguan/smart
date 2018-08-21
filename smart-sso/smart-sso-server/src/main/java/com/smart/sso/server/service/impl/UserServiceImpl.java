@@ -19,15 +19,19 @@ import com.smart.mvc.util.StringUtils;
 import com.smart.sso.server.controller.common.BaseController;
 import com.smart.sso.server.dao.UserDao;
 import com.smart.sso.server.enums.TrueFalseEnum;
+import com.smart.sso.server.model.Project;
 import com.smart.sso.server.model.ProjectUserRole;
 import com.smart.sso.server.model.User;
 import com.smart.sso.server.service.OpenstackUserService;
+import com.smart.sso.server.service.ProjectService;
 import com.smart.sso.server.service.ProjectUserRoleService;
 import com.smart.sso.server.service.UserService;
 
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserDao, User, String> implements UserService {
 
+    @Resource
+    private ProjectService         projectService;
     @Resource
     private ProjectUserRoleService projectUserRoleService;
     @Resource
@@ -48,17 +52,23 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User, String> implemen
     }
 
     @Override
-    public Result login(String ip, String account, String password) {
+    public Result login(String ip, String account, String password, String server) {
 
         Result result = Result.createSuccessResult();
+        Project project = projectService.findByCode(server);
         User user = findByAccount(account);
         try {
+            // <-- 验证项目是否已注册服务 -->
+            if (project == null) {
+                result.setCode(ResultCode.ERROR).setMessage("服务项目不存在");
+                return result;
+            }
             // <-- 验证用户是否存在信息 -->
             if (user == null) {
                 result.setCode(ResultCode.ERROR).setMessage("登录名不存在");
                 return result;
             }
-            Token token = openstackUserService.login(account, password, user.getDefault_project_id());
+            Token token = openstackUserService.login(account, password, project.getName());
             // <-- 验证用户信息 -->
             if (token == null) {
                 result.setCode(ResultCode.ERROR).setMessage("登录验证失败");

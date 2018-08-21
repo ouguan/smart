@@ -8,7 +8,6 @@ import org.openstack4j.core.transport.Config;
 import org.openstack4j.model.common.ActionResponse;
 import org.openstack4j.model.common.Identifier;
 import org.openstack4j.model.identity.v3.Group;
-import org.openstack4j.model.identity.v3.Project;
 import org.openstack4j.model.identity.v3.Role;
 import org.openstack4j.model.identity.v3.Token;
 import org.openstack4j.model.identity.v3.User;
@@ -90,29 +89,9 @@ public class OpenstackUserServiceImpl implements OpenstackUserService {
      */
     @Override
     @Transactional
-    public Token login(String username, String password, String projectid) throws ValidateException{
+    public Token login(String username, String password, String projectname) throws ValidateException{
 
-        OSClientV3 userOs;
-        String projectname = null;
-        
-        userOs = userAuthenticate(username, password);
-        Token  token = userOs.getToken();
-        List<? extends Project> projects = userOs.identity().tokens().getProjectScopes(token.getId());
-        for(Project val : projects) {
-            if(val.getId().equals(projectid)) {
-                projectname = val.getName();
-                break;
-            }
-        }
-        
-        if(projectname == null && projects.size() > 0){
-            projectid = projects.get(0).getId();
-            projectname = projects.get(0).getName();
-        }
-        
-        if(projectname != null) {
-            userOs = userAuthenticate(username, password, projectname);
-        }
+        OSClientV3 userOs = userAuthenticate(username, password, projectname);
         
         logger.debug("KeyStone Token(过期时间) : " + userOs.getToken().getExpires());
         return userOs.getToken();

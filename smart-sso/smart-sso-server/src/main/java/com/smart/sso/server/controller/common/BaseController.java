@@ -95,4 +95,26 @@ public class BaseController {
             return request.getRemoteAddr();
         }
     }
+    
+    /**
+     * 获取IP地址
+     * 
+     * @param request
+     * @return
+     */
+    protected String getAppCode(HttpServletRequest request) {
+
+        String appCode = request.getContextPath();
+        if (!StringUtils.isBlank(appCode) && !"unknown".equalsIgnoreCase(appCode)) {
+            // 多次反向代理后会有多个IP值，第一个为真实IP。
+            int index = appCode.indexOf('/');
+            if (index != -1) {
+                return appCode.substring(index + 1, appCode.length());
+            } else {
+                return appCode;
+            }
+        } else {
+            return appCode;
+        }
+    }
 }
